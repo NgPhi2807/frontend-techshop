@@ -1,0 +1,131 @@
+---
+export const prerender = false;
+import BaseLayout from "../../layouts/Layout.astro";
+import HeaderTopBar from "../../components/Header/HeaderTopBar";
+import HeaderMain from "../../components/Header/Header";
+import ProductDetailClient from "../../components/ProductDetail/ProductDetailClient";
+import RelativeProduct from "../../components/RelativeProduct/RelativeProduct";
+import { getHomePageData } from "../../api/productApi";
+import { fetchRelatedProducts } from "../../api/relatedProducts";
+import { fetchProductReviews } from "../../api/reviewApi";
+import ProductReview from "../../components/Review/ProductReviewList";
+import ProductRating from "../../components/Review/ProductRatingSummary";
+const { slug } = Astro.params;
+
+let productData: any = null;
+let error: string | null = null;
+let relatedProducts: any = null;
+let productReviews: any = null;
+let product: any = null;
+let productDetails: any = null;
+let productBreadcrumb: any = null;
+let productRating: any = null;
+try {
+  const apiResponse = await getHomePageData(slug as string);
+  const { product_detail } = apiResponse;
+
+  if (product_detail?.code === 1000 && product_detail.data) {
+    productData = product_detail.data;
+    ({
+      detail: productDetails,
+      breadcrumb: productBreadcrumb,
+      rating: productRating,
+    } = productData);
+    product = productData;
+    try {
+      if (productData.id) {
+        const reviewsResponse = await fetchProductReviews(productData.id);
+        if (reviewsResponse?.code === 1000 && reviewsResponse.data) {
+          productReviews = reviewsResponse.data;
+        }
+      }
+    } catch (e) {}
+
+    const breadcrumbItems = productBreadcrumb?.items;
+    if (breadcrumbItems && breadcrumbItems.length > 0) {
+      const lastSlug = breadcrumbItems[breadcrumbItems.length - 1]?.slug;
+      if (lastSlug) {
+        relatedProducts = await fetchRelatedProducts(lastSlug);
+      }
+    }
+  } else {
+    error =
+      product_detail?.error || "Lỗi không xác định khi tải dữ liệu sản phẩm.";
+  }
+} catch (e) {
+  error = (e as Error).message;
+}
+---
+
+<BaseLayout>
+  <Fragment slot="head">
+    <title>
+      {productData ? productData.name : "Chi tiết sản phẩm"}
+    </title>
+  </Fragment>
+
+  <HeaderTopBar client:load />
+  <HeaderMain client:load />
+
+  <main>
+    {
+      productBreadcrumb && (
+        <nav
+          class="mx-auto w-full max-w-screen-xl text-sm text-gray-500 2xl:px-0 px-2 py-4"
+          aria-label="Breadcrumb"
+        >
+          <ol class="flex items-center space-x-2 gap-x-1 gap-y-2 flex-wrap lg:text-sm text-xs">
+            <li class="inline-flex items-center">
+              <a href="/" class="text-black transition font-medium">
+                Trang chủ
+              </a>
+            </li>
+            <li class="text-gray-400">/</li>
+
+            {productBreadcrumb.items.map(
+              (item: { name: string; slug: string }) => (
+                <>
+                  <li class="inline-flex items-center">
+                    <a href={`/${item.slug}`} class="font-medium text-black">
+                      {item.name}
+                    </a>
+                  </li>
+                  <li class="text-gray-400">/</li>
+                </>
+              )
+            )}
+
+            {/* Current Page */}
+            <li class="inline-flex items-center">
+              <span class="text-gray-500 font-medium">
+                {productBreadcrumb.current.name}
+              </span>
+            </li>
+          </ol>
+        </nav>
+      )
+    }
+
+    <ProductDetailClient
+      product={product}
+      productDetails={productDetails}
+      client:idle
+    />
+    <div
+      class="bg-[#eaeaea] p-3 lg:p-4 mt-6 mx-2 max-w-screen-xl lg:mx-auto rounded-lg"
+    >
+      <h3 class="pb-4 text-base lg:text-xl font-semibold text-gray-900">
+        Đánh giá sản phẩm {productData.name}
+      </h3>
+      <ProductRating
+        data={productRating}
+        productId={productData?.id}
+        productName={productData?.name}
+        client:load
+      />
+      <ProductReview data={productReviews} client:idle />
+    </div>
+
+    <RelativeProduct data={relatedProducts} client:load />
+  </main>
+</BaseLayout>

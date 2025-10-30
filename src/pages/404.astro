@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { GioHangPanel } from "../components/Cart/GioHangPanel";
+import HeaderTopBar from "../components/Header/HeaderTopBar";
+import HeaderMain from "../components/Header/Header";
+const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính hãng`;
+import NotFoundPage from "../components/Error/Error404Page";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>{title}</title>
+  </Fragment>
+  <HeaderTopBar client:load />
+  <HeaderMain client:load />
+  <main
+    class="w-full py-4 max-w-screen-xl mx-auto lg:px-2 px-2 2xl:px-0 relative"
+  >
+    <NotFoundPage client:load />
+  </main>
+</Layout>

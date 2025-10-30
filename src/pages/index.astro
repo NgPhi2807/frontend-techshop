@@ -1,0 +1,137 @@
+---
+export const prerender = true;
+import BaseLayout from "../layouts/Layout.astro";
+import SidebarNav from "../components/SideBar/CategorySidebar";
+import HeroMainBanner from "../components/Hero/Hero";
+import RightBanner from "../components/Banner/RightBanner";
+import HeaderTopBar from "../components/Header/HeaderTopBar";
+import HeaderMain from "../components/Header/Header";
+import PromoBanner from "../components/Banner/PromoBanner";
+import MobileIphone from "../components/Home/Mobile";
+import Laptop from "../components/Home/Laptop";
+import VerticalBannerStack from "../components/Banner/VerticalBannerStack";
+import FlashSale from "../components/Home/FlashSale";
+
+import { getHomePageData } from "../api/homeApi";
+
+const homeData = await getHomePageData();
+
+const {
+  iphone,
+  samsung,
+  laptop,
+  mobile_brand,
+  laptop_brand,
+  laptop_feature,
+  mobile_feature,
+  mobilebestseller,
+  laptopbestseller,
+} = homeData;
+
+const iphonedata = iphone?.data || [];
+const mobilebrand = mobile_brand?.data?.children || [];
+const mobilefeature = mobile_feature?.data?.children;
+const laptopfeature = laptop_feature?.data?.children;
+const laptopbrand = laptop_brand?.data?.children;
+const laptopdata = laptop?.data;
+const laptop_bestseller = laptopbestseller?.data;
+const mobile_bestseller = mobilebestseller?.data;
+const samsungdata = samsung?.data;
+const mobileVerticalBanners = [
+  {
+    id: 1,
+    src: "/src/assets/01K6F050R8WY7PZK75J36ST4CV.webp",
+    alt: "Banner Điện thoại đặc biệt",
+    href: "/danh-muc/dien-thoai",
+  },
+  {
+    id: 2,
+    src: "/src/assets/01K6F050ZM5Q7TATVRHDGHEMAV.webp",
+    alt: "Banner Phụ kiện hot",
+    href: "/danh-muc/phu-kien",
+  },
+];
+
+const laptopVerticalBanners = [
+  {
+    id: 3,
+    src: "/src/assets/01K6FD0T06JYFKEX5N5EPYB0SP.webp",
+    alt: "Banner Laptop Gaming",
+    href: "/danh-muc/laptop-gaming",
+  },
+  {
+    id: 4,
+    src: "/src/assets/01K6FD0TANS274QMFG3Q5AQCAA.webp",
+    alt: "Banner Màn hình máy tính",
+    href: "/danh-muc/man-hinh",
+  },
+];
+const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính hãng`;
+---
+
+<BaseLayout>
+  <Fragment slot="head">
+    <title>{title}</title>
+  </Fragment>
+  <HeaderTopBar />
+  <HeaderMain client:idle />
+
+  <div class="flex flex-row w-full py-4 max-w-screen-xl mx-auto px-2 2xl:px-0">
+    <div class="w-[18%] hidden lg:block">
+      <SidebarNav
+        client:idle
+      />
+    </div>
+
+    <div class="w-full lg:w-[65%]">
+      <HeroMainBanner client:idle />
+    </div>
+
+    <div class="w-[17%] hidden lg:block">
+      <RightBanner client:idle />
+    </div>
+  </div>
+  <div
+    class="max-w-screen-xl flex flex-col gap-2 mx-auto px-2 md:px-4 2xl:px-0"
+  >
+    <!-- <PromoBanner /> -->
+
+    <div class="flex flex-row gap-2 items-stretch ">
+      <div class="w-full">
+        <FlashSale
+          datamobile={mobile_bestseller}
+          datalaptop={laptop_bestseller}
+          client:idle
+        />
+      </div>
+    </div>
+    <div class="flex flex-row gap-2 items-stretch py-4">
+      <div class="w-[18%] hidden lg:block">
+        <VerticalBannerStack data={mobileVerticalBanners} client:idle />
+      </div>
+      <div class="w-full lg:w-[82%]">
+        <MobileIphone
+          dataiphone={iphonedata}
+          datasamsung={samsungdata}
+          brands={mobilebrand}
+          feature={mobilefeature}
+          client:idle
+        />
+      </div>
+    </div>
+
+    <div class="flex flex-row gap-2 items-stretch py-4">
+      <div class="w-[18%] hidden lg:block">
+        <VerticalBannerStack data={laptopVerticalBanners} client:idle />
+      </div>
+      <div class="w-full lg:w-[82%]">
+        <Laptop
+          data={laptopdata}
+          brands={laptopbrand}
+          feature={laptopfeature}
+          client:idle
+        />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

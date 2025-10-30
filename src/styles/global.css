@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Trong file CSS gốc của bạn */
+
+/* Ẩn thanh cuộn cho Webkit (Chrome, Safari, Edge) */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ẩn thanh cuộn cho Firefox và IE/Edge (trước Webkit) */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+/* Trong file global.css hoặc index.css của bạn */
+
+/* Class này tạo ra một viền gradient 2px */
+.gradient-border-custom {
+  /* Nền chính: Gradient solid (padding-box) */
+  background: linear-gradient(to top right, #fcfeff, #eff5ff) padding-box;
+  
+  border: 1px solid #a6c7fb; 
+  border-radius: 0.75rem; /* Giả định rounded-lg */
+  
+  border-image: linear-gradient(to top right, #dbe8fe, #609afa) border-box;
+  border-image-slice: 1; 
+}
+        .swiper-pagination-bullet {
+            width: 10px;
+            height: 10px;
+            background: #d1d5db; /* Gray-300 for inactive dots */
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        .swiper-pagination-bullet-active {
+            background-color: #ff9d00 !important; /* Tailwind Orange-600 */
+            width: 20px;
+            border-radius: 1px;
+        }
+
+        .swiper-pagination {
+            bottom: 1px !important;
+            padding: 0 50px; /* Thêm padding để không chạm vào nút điều hướng */
+        }
+        
+        /* Ẩn thanh cuộn cho thanh nav item trên mobile */
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+@keyframes shakeBell {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+.shake-bell {
+  animation: shakeBell 1.8s infinite ease-in-out;
+  transform-origin: bottom center;
+}

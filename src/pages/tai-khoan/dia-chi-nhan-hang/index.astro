@@ -1,0 +1,26 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import HeaderTopBar from "../../../components/Header/HeaderTopBar";
+import HeaderMain from "../../../components/Header/Header";
+import UserAccountLayout from "../../../components/UserPage/UserPageLayout"; 
+import ShippingAddressList from "../../../components/UserPage/ShippingAddressList"
+const pageTitle = `Địa chỉ giao hàng`;
+const breadcrumbTitle = `Địa chỉ giao hàng`;
+const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>{pageTitle} | {siteTitle}</title>
+  </Fragment>
+  
+  <HeaderTopBar client:load />
+  <HeaderMain client:load />
+
+  <main>
+    <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:load>
+    
+      <ShippingAddressList client:load />
+    </UserAccountLayout>
+  </main>
+</Layout>

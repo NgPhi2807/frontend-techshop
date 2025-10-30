@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Không index các query có dấu ? (nếu có)
+Disallow: /*?
+
+# Cấm index các file nhạy cảm (nếu dùng Next.js/Astro build)
+Disallow: /api/
+Disallow: /server/
+Disallow: /private/
+Disallow: /preview/
+
+# Sitemap chính (có thể dùng sitemap-index nếu chia nhỏ)
+Sitemap: https://motchill4k.site/sitemap.xml   

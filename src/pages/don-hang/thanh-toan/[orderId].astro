@@ -1,0 +1,26 @@
+---
+const { orderId } = Astro.params;
+import OrderRouterWrapper from "../../../components/Cart/OrderRouterWrapper";
+import Layout from "../../../layouts/Layout.astro";
+import HeaderMain from "../../../components/Header/Header";
+import HeaderTopBar from "../../../components/Header/HeaderTopBar";
+
+if (!orderId) {
+  return Astro.redirect("/404");
+}
+
+const orderIdProp = orderId;
+---
+
+<Layout>
+  <Fragment slot="head"> </Fragment>
+  <HeaderTopBar client:load />
+  <HeaderMain client:load />
+  <main
+    class="w-full py-4 max-w-screen-xl mx-auto lg:px-2 px-2 2xl:px-0 relative"
+  >
+    <div>
+      <OrderRouterWrapper orderId={orderIdProp} client:only="react" />
+    </div>
+  </main>
+</Layout>
