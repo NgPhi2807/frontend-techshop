@@ -82,7 +82,7 @@ try {
             </li>
             <li class="text-gray-400">/</li>
 
-            {productBreadcrumb.items.map(
+            {productBreadcrumb.items?.slice(1).map(
               (item: { name: string; slug: string }) => (
                 <>
                   <li class="inline-flex items-center">

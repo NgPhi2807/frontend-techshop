@@ -1,17 +1,24 @@
 ---
-import BottomBanner from "../../components/Banner/Banner";
-import HeaderMain from "../../components/Header/Header";
-import HeaderTopBar from "../../components/Header/HeaderTopBar";
-import ProductList from "../../components/ProductLists/ProductList";
-import BaseLayout from "../../layouts/Layout.astro";
-import { fetchFilter } from "../../api/filterApi";
-import { fetchBreadcrumb } from "../../api/breadcrumbApi";
+import BottomBanner from "../components/Banner/Banner";
+import HeaderMain from "../components/Header/Header";
+import HeaderTopBar from "../components/Header/HeaderTopBar";
+import ProductList from "../components/ProductLists/ProductList";
+import BaseLayout from "../layouts/Layout.astro";
+import { fetchFilter } from "../api/filterApi";
+import { fetchBreadcrumb } from "../api/breadcrumbApi";
 
-const { category, slug } = Astro.params;
-const categorySlug = `${category}/${slug}`;
-const filter = await fetchFilter(category ?? "");
-const breadcrumbData = await fetchBreadcrumb(categorySlug ?? "");
-const breadcrumb = breadcrumbData?.data?.breadcrumb; // Safely access the breadcrumb object
+// Lấy toàn bộ slug, ví dụ: "dienthoai/apple"
+const categorySlug = Astro.params.category;
+
+// Gọi API trực tiếp, không cần try/catch hay xử lý lỗi
+const filter = await fetchFilter(categorySlug);
+const breadcrumbData = await fetchBreadcrumb(categorySlug);
+const breadcrumb = breadcrumbData?.data?.breadcrumb;
+
+
+if (filter === null || breadcrumbData === null) {
+  return Astro.redirect('/404');
+}
 ---
 
 <BaseLayout>
@@ -55,6 +62,7 @@ const breadcrumb = breadcrumbData?.data?.breadcrumb; // Safely access the breadc
         }
       </ol>
     </nav>
+
     <ProductList categorySlug={categorySlug} filter={filter} client:idle />
   </div>
 </BaseLayout>
