@@ -1,7 +1,9 @@
 ---
-export const prerender = false;
+export const isr = {
+  expiration: 3600, 
+};
+
 import BaseLayout from "../../layouts/Layout.astro";
-import HeaderTopBar from "../../components/Header/HeaderTopBar";
 import HeaderMain from "../../components/Header/Header";
 import ProductDetailClient from "../../components/ProductDetail/ProductDetailClient";
 import RelativeProduct from "../../components/RelativeProduct/RelativeProduct";
@@ -11,7 +13,6 @@ import { fetchProductReviews } from "../../api/reviewApi";
 import ProductReview from "../../components/Review/ProductReviewList";
 import ProductRating from "../../components/Review/ProductRatingSummary";
 const { slug } = Astro.params;
-
 let productData: any = null;
 let error: string | null = null;
 let relatedProducts: any = null;
@@ -20,10 +21,10 @@ let product: any = null;
 let productDetails: any = null;
 let productBreadcrumb: any = null;
 let productRating: any = null;
+
 try {
   const apiResponse = await getHomePageData(slug as string);
   const { product_detail } = apiResponse;
-
   if (product_detail?.code === 1000 && product_detail.data) {
     productData = product_detail.data;
     ({
@@ -39,10 +40,12 @@ try {
           productReviews = reviewsResponse.data;
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("❌ Error fetching reviews", e);
+    }
 
     const breadcrumbItems = productBreadcrumb?.items;
-    if (breadcrumbItems && breadcrumbItems.length > 0) {
+    if (breadcrumbItems?.length > 0) {
       const lastSlug = breadcrumbItems[breadcrumbItems.length - 1]?.slug;
       if (lastSlug) {
         relatedProducts = await fetchRelatedProducts(lastSlug);
@@ -57,17 +60,15 @@ try {
 }
 ---
 
+
 <BaseLayout>
   <Fragment slot="head">
     <title>
       {productData ? productData.name : "Chi tiết sản phẩm"}
     </title>
   </Fragment>
-
-  <HeaderTopBar client:load />
   <HeaderMain client:load />
-
-  <main>
+  <main class="pb-24">
     {
       productBreadcrumb && (
         <nav
@@ -95,7 +96,6 @@ try {
               )
             )}
 
-            {/* Current Page */}
             <li class="inline-flex items-center">
               <span class="text-gray-500 font-medium">
                 {productBreadcrumb.current.name}

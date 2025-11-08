@@ -1,7 +1,7 @@
-// src/components/HeaderMain.tsx
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { toast } from "react-toastify";
+import logo from "../../assets/logo.png";
+import logodth from "../../assets/logo-dth_1592615391.png";
 import {
     Menu,
     ChevronDown,
@@ -19,15 +19,19 @@ import {
     Package, 
     Smartphone,
     Monitor,
-    Watch,Mic
+    Watch,
+    Mic
 } from "lucide-react";
 import { useCartStore } from "../../stores/cartStore";
 import AuthModals from "../Auth/AuthModal";
 import { useAuthStore } from "../../stores/authStore";
 import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore"; 
 import {type LucideIcon } from 'lucide-react'; 
+import HeaderTopBar from "./HeaderTopBar";
+import SidebarNav from "../SideBar/CategorySidebar"; 
 type ModalType = "login" | "register" | null;
-
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 interface ProductSuggestionItem {
     id: number;
     name: string;
@@ -36,10 +40,6 @@ interface ProductSuggestionItem {
     price: number;
     special_price: number | null;
 }
-
-// =========================================================
-// MẢNG DỮ LIỆU RIÊNG CHO DROPDOWN TÀI KHOẢN (Giữ nguyên)
-// =========================================================
 
 interface UserDropdownItem {
     id: string;
@@ -75,9 +75,13 @@ const USER_DROPDOWN_ITEMS: UserDropdownItem[] = [
     },
 ];
 
-// =========================================================
-// UTILITIES (Giữ nguyên)
-// =========================================================
+const mobileNavItems: MobileNavItem[] = [
+    { name: "Điện thoại", href: "/mobile", icon: Smartphone },
+    { name: "Laptop", href: "/laptop", icon: Monitor },
+    { name: "Âm thanh, Mic", href: "#", icon: Mic },
+    { name: "Đồng hồ, Camera", href: "#", icon: Watch },
+];
+
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -100,21 +104,12 @@ const debounce = <T extends unknown[]>(
     };
 };
 
-// CẬP NHẬT: Định nghĩa lại mobileNavItems để chứa href và icon
 interface MobileNavItem {
     name: string;
     href: string;
     icon?: LucideIcon;
 }
 
-const mobileNavItems: MobileNavItem[] = [
-    { name: "Điện thoại", href: "/mobile", icon: Smartphone },
-    { name: "Laptop", href: "/laptop", icon: Monitor },
-    { name: "Âm thanh, Mic", href: "#", icon: Mic },
-    { name: "Đồng hồ, Camera", href: "#", icon: Watch },
-];
-
-// --- Sub-Component: ProductSuggestion (Giữ nguyên) ---
 
 interface ProductSuggestionProps {
     suggestions: ProductSuggestionItem[];
@@ -184,20 +179,13 @@ const ProductSuggestion: React.FC<ProductSuggestionProps> = ({
     );
 };
 
-// --- Main Component: HeaderMain ---
-
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
-
-const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 
 const HeaderMain: React.FC = () => {
-    // Lấy trạng thái Auth
     const {
         isAuthenticated,
         logout,
     } = useAuthStore();
 
-    // Lấy dữ liệu User Profile
     const { user, loading } = useCustomerProfileStore(); 
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -208,19 +196,25 @@ const HeaderMain: React.FC = () => {
         ProductSuggestionItem[]
     >([]);
     const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
+    const [isSidebarNavOpen, setIsSidebarNavOpen] = useState(false); 
+
+    // Đóng Sidebar Nav khi click vào backdrop (hoặc bên ngoài)
+    const closeSidebarNav = () => setIsSidebarNavOpen(false);
 
     const isLoggedIn = isAuthenticated; 
     
-    // Dữ liệu người dùng hiển thị
     const userName = user?.name || "Bạn";
     const userPhone = user?.phone || "Chưa có SĐT";
     
-    // Dữ liệu tổng đơn hàng và tổng chi tiêu
     const totalOrders = user?.totalOrders ?? 0;
     const totalAmountSpent = user?.totalAmountSpent ?? 0;
 
     const toggleMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    const toggleSidebarNav = () => {
+        setIsSidebarNavOpen(!isSidebarNavOpen);
     };
 
     const openLoginModal = () => setActiveAuthModal("login");
@@ -232,7 +226,7 @@ const HeaderMain: React.FC = () => {
     const handleStoreLogout = () => {
         logout(); 
         setIsDropdownOpen(false); 
-        setIsMobileMenuOpen(false); // Thêm đóng menu mobile khi đăng xuất
+        setIsMobileMenuOpen(false); 
     };
 
     const cartItems = useCartStore((state) => state.items);
@@ -240,8 +234,6 @@ const HeaderMain: React.FC = () => {
     const totalCartQuantity = useMemo(() => {
         return cartItems.reduce((total, item) => total + item.quantity, 0);
     }, [cartItems]);
-
-    // --- Search Suggestion Logic (Giữ nguyên) ---
 
     const fetchSuggestions = useCallback(async (query: string) => {
         if (!query || query.trim().length < 2) {
@@ -296,22 +288,33 @@ const HeaderMain: React.FC = () => {
                 "search-suggestion-container",
             );
             const userMenuContainer = document.getElementById("user-menu-dropdown");
-
+         
             if (searchContainer && !searchContainer.contains(event.target as Node)) {
                 setIsSuggestionsVisible(false);
             }
             if (userMenuContainer && !userMenuContainer.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
             }
+            
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, []);
+    }, [isSidebarNavOpen]); 
 
-    // --- Auth Button Components (PC DROPDOWN) ---
+    useEffect(() => {
+        if (isSidebarNavOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isSidebarNavOpen]);
 
     const AuthButton = isLoggedIn ? (
         <div className="relative hidden flex-shrink-0 md:block" id="user-menu-dropdown">
@@ -328,12 +331,10 @@ const HeaderMain: React.FC = () => {
                     role="menu"
                 >
                     <div className="block border-b px-4 py-2 text-sm font-semibold text-gray-700">
-                        {/* HIỂN THỊ TÊN VÀ SĐT (PC) */}
                         <p className="truncate">Xin chào, {userName}!</p>
                         <p className="text-xs font-normal text-gray-500 mt-0.5">SĐT: {userPhone}</p>
                     </div>
                     
-                    {/* VÙNG THỐNG KÊ MUA HÀNG (PC) */}
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1 p-3 border-b border-gray-100">
                         <div className="flex items-center space-x-1">
                             <Package className="h-4 w-4 text-red-500 flex-shrink-0" />
@@ -351,7 +352,6 @@ const HeaderMain: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* RENDER CÁC MỤC TỪ MẢNG DỮ LIỆU */}
                     {USER_DROPDOWN_ITEMS.map((item) => {
                         const IconComponent = item.icon;
                         return (
@@ -378,7 +378,6 @@ const HeaderMain: React.FC = () => {
             )}
         </div>
     ) : (
-        // CHƯA ĐĂNG NHẬP (Giữ nguyên)
         <button
             onClick={openLoginModal}
             className="hidden flex-shrink-0 items-center rounded-lg bg-[#e45464] px-4 py-2.5 text-white transition hover:bg-red-400 md:flex"
@@ -389,9 +388,7 @@ const HeaderMain: React.FC = () => {
     );
 
     const MobileAuthInfo = isLoggedIn ? (
-        // Mobile: Đã đăng nhập (Điều chỉnh khu vực chào mừng và thống kê)
         <div className="flex flex-col space-y-3">
-            {/* KHU VỰC CHÀO MỪNG */}
             <div className="flex items-center text-red-600 bg-red-50 p-3 rounded-lg">
                 <UserIcon className="h-5 w-5 mr-3 flex-shrink-0" />
                 <div>
@@ -400,7 +397,6 @@ const HeaderMain: React.FC = () => {
                 </div>
             </div>
 
-            {/* VÙNG THỐNG KÊ MUA HÀNG (MOBILE) */}
             <div className="grid grid-cols-2 gap-2 text-center text-gray-700">
                 <div className="rounded-lg bg-gray-100 p-2">
                     <Package className="h-5 w-5 mx-auto text-red-500 mb-1" />
@@ -415,7 +411,6 @@ const HeaderMain: React.FC = () => {
             </div>
         </div>
     ) : (
-        // Mobile: Chưa đăng nhập (Giữ nguyên)
         <button
             onClick={() => {
                 setIsMobileMenuOpen(false);
@@ -428,38 +423,43 @@ const HeaderMain: React.FC = () => {
         </button>
     );
 
-    // --- Render ---
-
     return (
         <>
-            <div className="bg-[linear-gradient(to_right,#e51d38_0%,#ec4352_100%)] px-0 md:px-4">
-                <div className="mx-auto max-w-7xl py-3">
+            <div className="bg-[linear-gradient(to_right,#e51d38_0%,#ec4352_100%)]  relative z-50"> {/* Đặt z-index cao cho header */}
+                        <HeaderTopBar />
+                <div className="mx-auto max-w-screen-xl py-3">
                     <div className="flex h-12 items-center justify-between gap-4">
-                        {/* Logo và Danh mục PC (Giữ nguyên) */}
                         <a
                             href="/"
                             className="hidden flex-shrink-0 items-center pr-2 lg:flex"
                         >
-                            <img src="/src/assets/logo.png" alt="Logo" className="h-8" />
+                            <img src={logo.src} alt="Logo" className="h-8" />
                         </a>
                         <a
                             href="/"
                             className="ml-1 flex h-full w-10 flex-shrink-0 items-center justify-center rounded-lg lg:hidden"
                         >
                             <img
-                                src="/src/assets/logo-dth_1592615391.png"
+                                src={logodth.src}
                                 alt="S Logo"
                                 className="h-full w-full object-contain"
                             />
                         </a>
-                        <button className="hidden flex-shrink-0 items-center rounded-lg bg-[#e45464] px-3 py-3 text-white transition hover:bg-red-400 md:flex">
-                            <Menu className="mr-1 h-5 w-5" />
-                            <span className="hidden text-sm font-normal lg:block">
-                                Danh mục
-                            </span>
-                            <ChevronDown className="ml-1 h-4 w-4" />
-                        </button>
-                        {/* Thanh tìm kiếm + Gợi ý (Giữ nguyên) */}
+                        
+                        <div className="relative hidden flex-shrink-0 md:block" id="sidebar-nav-container">
+                            <button 
+                                className="flex items-center rounded-lg bg-[#e45464] px-3 py-3 text-white transition hover:bg-red-400"
+                                onClick={toggleSidebarNav}
+                                id="sidebar-nav-button"
+                            >
+                                <Menu className="mr-1 h-5 w-5" />
+                                <span className="hidden text-sm font-normal lg:block">
+                                    Danh mục
+                                </span>
+                                <ChevronDown className="ml-1 h-4 w-4" />
+                            </button>
+                        </div>
+
                         <div
                             id="search-suggestion-container"
                             className="relative max-w-2xl flex-1"
@@ -496,7 +496,6 @@ const HeaderMain: React.FC = () => {
                                     </div>
                                 )}
                         </div>
-                        {/* Nhóm Icons Mobile (Giỏ hàng, Menu) */}
                         <div className="flex flex-shrink-0 items-center justify-center gap-2 md:hidden">
                             <a
                                 href="/gio-hang"
@@ -516,7 +515,6 @@ const HeaderMain: React.FC = () => {
                                 <Menu className="h-7 w-7" />
                             </button>
                         </div>
-                        {/* Giỏ hàng PC & Auth Button PC (Giữ nguyên) */}
                         <a
                             href="/gio-hang"
                             className="relative hidden flex-shrink-0 items-center px-2 text-sm text-white transition hover:text-red-100 md:flex"
@@ -532,7 +530,6 @@ const HeaderMain: React.FC = () => {
                         {AuthButton}
                     </div>
                 </div>
-                {/* Overlay Mobile (Giữ nguyên) */}
                 <div
                     className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 md:hidden ${
                         isMobileMenuOpen
@@ -541,7 +538,6 @@ const HeaderMain: React.FC = () => {
                     }`}
                     onClick={toggleMenu}
                 ></div>
-                {/* Mobile Sidebar */}
                 <div
                     className={`fixed left-0 top-0 z-50 h-full w-64 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
                         isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -558,15 +554,12 @@ const HeaderMain: React.FC = () => {
                             </button>
                         </div>
                         
-                        {/* Khối chứa thông tin người dùng và menu cuộn được */}
                         <div className="flex-1 overflow-y-auto pb-4">
                             
-                            {/* Vùng chào mừng, thống kê, và Đăng nhập/đăng ký */}
                             <div className="flex flex-col border-b border-gray-100 p-4">
                                 {MobileAuthInfo}
                             </div>
 
-                            {/* RENDER MỤC TÀI KHOẢN TRÊN MOBILE */}
                             {isLoggedIn && (
                                 <div className="flex flex-col border-b border-gray-100 pb-2">
                                     <div className="px-3 py-2 text-base font-semibold text-gray-800">Quản lý Tài khoản</div>
@@ -595,12 +588,11 @@ const HeaderMain: React.FC = () => {
                                 </div>
                             )}
 
-                            {/* Nav mobile (Danh mục sản phẩm) */}
                             <nav>
                                 <ul className="m-0 list-none p-0">
                                     <div className="px-3 py-2 text-base font-semibold text-gray-800">Danh mục</div>
                                     {mobileNavItems.map((item, index) => {
-                                        const IconComponent = item.icon || ChevronRight; // Fallback icon
+                                        const IconComponent = item.icon || ChevronRight; 
                                         return (
                                             <li key={index}>
                                                 <a
@@ -634,6 +626,38 @@ const HeaderMain: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {isSidebarNavOpen && (
+                <div 
+                    className="fixed inset-0 z-40 bg-black/55 md:block hidden "
+                    onClick={closeSidebarNav}
+                >
+                    <div 
+                        className="w-full max-w-screen-xl mx-auto transition-all duration-500 ease-in-out px-2 2xl:px-0" 
+                        style={{marginTop: '136px'}} 
+                        onClick={(e) => e.stopPropagation()} 
+                    >
+                        <div 
+                            className="flex flex-row w-full"
+                            id="pc-sidebar-nav-content" 
+                        >
+                            <div className="w-[18%] flex-shrink-0 animate-fade-in-fast">
+                                <div className="relative w-full">
+                                    <div className="shadow-xl flex flex-col overflow-x-hidden rounded-lg bg-white text-neutral-800 h-full">
+                                        <SidebarNav /> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="w-[65%]">
+                                
+                            </div>
+                            <div className="w-[17%]"></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <AuthModals
                 initialModal={activeAuthModal}
                 onAuthenticationSuccess={closeAuthModal}

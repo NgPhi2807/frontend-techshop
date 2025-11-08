@@ -80,7 +80,7 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative py-0 lg:py-6">
       {/* Title Header */}
       <div className="relative z-30 mx-auto w-full lg:w-fit">
         <div className="relative z-10 flex items-center justify-center rounded-lg bg-gradient-to-r from-[#ff4e00] to-[#ff4e00] px-10 py-3 lg:rounded-b-none lg:rounded-t-2xl">

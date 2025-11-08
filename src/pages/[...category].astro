@@ -1,24 +1,23 @@
 ---
-import HeaderMain from "../components/Header/Header";
-import ProductList from "../components/ProductLists/ProductList";
-import BaseLayout from "../layouts/Layout.astro";
-import BrandCategory from "../components/ListCategory/BrandCategoryGrid";
-import FeatureCategory from "../components/ListCategory/FeatureCategoryGrid";
 import { fetchFilter } from "../api/filterApi";
 import { fetchBreadcrumb } from "../api/breadcrumbApi";
-import { fetchBrandCategory } from "../api/categoryApi";
-import { fetchFeatureCategory } from "../api/categoryApi";
+import { fetchSeriesCategory } from "../api/categoryApi";
+import BaseLayout from "../layouts/Layout.astro";
+import HeaderMain from "../components/Header/Header";
+import ProductList from "../components/ProductLists/ProductList";
+import BrandCategory from "../components/ListCategory/SeriesCategory";
 import Footer from "../components/Footer/Footer";
 
+
 const { category } = Astro.params;
-const categorySlug = `${category}`;
 const filter = await fetchFilter(category ?? "");
-const breadcrumbData = await fetchBreadcrumb(categorySlug ?? "");
-const breadcrumb = breadcrumbData?.data?.breadcrumb; 
-const brandCategory = await fetchBrandCategory(categorySlug ?? "");
-const featureCategory = await fetchFeatureCategory(categorySlug ?? "");
-const features = featureCategory?.data?.children || [];
-const brands = brandCategory?.data?.children || [];
+const breadcrumbData = await fetchBreadcrumb(category ?? "");
+const breadcrumb = breadcrumbData?.data?.breadcrumb;
+if (!breadcrumb?.current) {
+  return Astro.redirect("/404");
+}
+const seriesCategory = await fetchSeriesCategory(category ?? "");
+const series = seriesCategory?.data?.children || [];
 const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính hãng`;
 
 ---
@@ -27,6 +26,7 @@ const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính 
   <Fragment slot="head">
   <title>{title}</title>
  </Fragment>
+
   <HeaderMain client:idle />
   <div class="max-w-screen-xl mx-auto py-8 px-2 2xl:px-0">
     <nav
@@ -59,18 +59,24 @@ const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính 
 
         {
           breadcrumb?.current && (
-            <li class="text-gray-800 font-semibold">
+            <li class="text-gray-800 font-medium">
               {breadcrumb.current.name}
             </li>
           )
         }
       </ol>
     </nav>
-        <BrandCategory brands={brands} />
-
-     <FeatureCategory feature={features} />
-
-    <ProductList categorySlug={categorySlug} filter={filter} client:idle />
+    
+    {
+      breadcrumb?.current && (
+        <h1 class="text-base lg:text-xl font-bold text-gray-900 pt-4">
+          {breadcrumb.current.name}
+        </h1>
+      )
+    }
+    <BrandCategory brands={series} />
+    <ProductList categorySlug={category} filter={filter} client:idle />
   </div>
-  <Footer>
+  <Footer /> 
+
 </BaseLayout>

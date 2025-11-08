@@ -44,7 +44,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 py-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-4 py-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {products.map((product) => {
         const currentPrice = product.special_price;
         const originalPrice = product.price;
@@ -76,7 +76,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             </div>
 
             {hasDiscount && (
-              <div className="absolute left-0 top-0 ">
+              <div className="absolute left-0 top-0">
                 <div className="relative h-auto w-16 md:w-20">
                   <img
                     src="/src/assets/discount-badge-ui-2025.webp"

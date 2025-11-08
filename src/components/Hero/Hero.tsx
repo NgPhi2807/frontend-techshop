@@ -2,60 +2,53 @@
 import React, { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules"; // Đã thêm Pagination
+import { Autoplay, Pagination } from "swiper/modules"; 
+import iphone17Src from "../../assets/iphone17.webp";
+import s25Src from "../../assets/s25.webp";
+import xiaomiSrc from "../../assets/xiaomi.webp";
+import iphoneAirSrc from "../../assets/690x300_iPhone_Air_opensale_v3.webp";
+import honorMagicSrc from "../../assets/honor-magic-v5-home.webp";
+
 const navSlideData = [
   {
     id: 0,
     title: "IPHONE 17 SERIES",
     subtitle: "Mua ngay",
-    src: "/src/assets/iphone17.webp",
+    src: iphone17Src.src,
     alt: "iPhone 17 Banner",
+    href: "/iphone-17-series", // <--- Đã thêm thuộc tính href
   },
   {
     id: 1,
     title: "GALAXY S25 ULTRA",
     subtitle: "Giá tốt chốt ngay",
-    src: "/src/assets/s25.webp",
+    src: s25Src.src,
     alt: "Galaxy S25 Banner",
+    href: "/galaxy-s25-ultra", // <--- Đã thêm thuộc tính href
   },
   {
     id: 2,
     title: "XIAOMI 15T SERIES",
     subtitle: "Ưu đãi đến 5 triệu++",
-    src: "/src/assets/xiaomi.webp",
+    src: xiaomiSrc.src,
     alt: "Xiaomi 15T Banner",
+    href: "/xiaomi-15t-series", // <--- Đã thêm thuộc tính href
   },
   {
     id: 3,
     title: "IPHONE AIR",
     subtitle: "Nhanh tay sở hữu",
-    src: "/src/assets/690x300_iPhone_Air_opensale_v3.webp",
+    src: iphoneAirSrc.src,
     alt: "AirPods Pro 3 Banner",
+    href: "/iphone-air", // <--- Đã thêm thuộc tính href
   },
   {
     id: 4,
     title: "HONOR MAGIC",
     subtitle: "Ưu đãi quà 12",
-    src: "/src/assets/honor-magic-v5-home.webp",
+    src: honorMagicSrc.src,
     alt: "Honor Magic Banner",
-  },
-];
-
-const bottomBannerData = [
-  {
-    id: 0,
-    src: "/src/assets/Camp-laptop-T9_Right-banner-1.webp", // Giả định các file này tồn tại
-    alt: "Bottom Banner 1",
-  },
-  {
-    id: 1,
-    src: "/src/assets/AW11-right-banner.webp",
-    alt: "Bottom Banner 2",
-  },
-  {
-    id: 2,
-    src: "/src/assets/Right-S25-FE.webp",
-    alt: "Bottom Banner 3",
+    href: "/honor-magic-series", // <--- Đã thêm thuộc tính href
   },
 ];
 
@@ -134,13 +127,13 @@ const HeroMainBanner: React.FC = () => {
 
             <Swiper
               ref={swiperRef}
-              modules={[Autoplay, Pagination]} // Đã thêm Pagination module
+              modules={[Autoplay, Pagination]}
               spaceBetween={0}
               slidesPerView={1}
               loop={true}
               initialSlide={activeIndex}
               autoplay={{ delay: 3000, disableOnInteraction: false }}
-              pagination={{ clickable: true }} // Thuộc tính này sẽ được kích hoạt
+              pagination={{ clickable: true }}
               className="h-full w-full"
               onSlideChange={(swiper) => {
                 setActiveIndex(swiper.realIndex);
@@ -148,11 +141,17 @@ const HeroMainBanner: React.FC = () => {
             >
               {navSlideData.map((slide) => (
                 <SwiperSlide key={slide.id}>
-                  <img
-                    src={slide.src}
-                    alt={slide.alt}
-                    className="aspect-[16/8] h-full w-full object-cover lg:aspect-[16/7]"
-                  />
+                  <a 
+                    href={slide.href} 
+                    aria-label={slide.alt} 
+                    className="block h-full w-full" 
+                  >
+                    <img
+                      src={slide.src}
+                      alt={slide.alt}
+                      className="aspect-[16/8] h-full w-full object-cover lg:aspect-[16/7]"
+                    />
+                  </a>
                 </SwiperSlide>
               ))}
             </Swiper>

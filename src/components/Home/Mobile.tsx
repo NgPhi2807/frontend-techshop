@@ -7,8 +7,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
-
-// Giả sử IMAGE_BASE_URL được định nghĩa trong môi trường
+import BrandCategory from "../ListCategory/BrandCategory"; // Cần điều chỉnh lại path
+import FeatureCategory from "../ListCategory/FeatureCategory"; // Cần điều chỉnh lại path
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 
 // --- Interfaces (Giữ nguyên) ---
@@ -140,48 +140,9 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
       </div>
       {/* -------------------------------------- */}
 
-      {/* Feature Section (Giữ nguyên) */}
-      {feature.length > 0 && (
-        <div className="flex w-full justify-center">
-          <div className="hide-scrollbar flex gap-2 overflow-x-auto px-1 py-3">
-            {visibleFeature.map((item) => (
-              <a
-                key={item.id}
-                href={`/${item.slug}`}
-                className="flex-shrink-0 whitespace-nowrap rounded-lg bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-300 lg:text-sm"
-              >
-                <div className="flex flex-row items-center justify-center gap-2">
-                  {item.logo && (
-                    <img
-                      src={`${IMAGE_BASE_URL}${item.logo}`}
-                      alt={item.name}
-                      className="mb-1 h-8 w-auto object-contain lg:h-12"
-                    />
-                  )}
-                  <p className="text-sm text-black">{item.name}</p>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      <FeatureCategory feature={feature} />
 
-      {/* Brands Section (Giữ nguyên) */}
-      {brands.length > 0 && (
-        <div className="flex w-full justify-center">
-          <div className="hide-scrollbar flex gap-2 overflow-x-auto px-1 py-3">
-            {visibleBrands.map((brand) => (
-              <a
-                key={brand.id}
-                href={`/${brand.slug}`}
-                className="flex-shrink-0 whitespace-nowrap rounded-full border border-gray-300 px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition duration-150 hover:border-red-500 hover:text-red-600 lg:text-sm"
-              >
-                {brand.name}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+     <BrandCategory brands={brands} />
 
       {/* Swiper Section (Sử dụng currentData) */}
       <Swiper

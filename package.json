@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.2.2",
+    "@astrojs/prefetch": "^0.4.1",
     "@astrojs/react": "^4.3.0",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/tailwind": "^6.0.2",
     "@fontsource/inter": "^5.2.8",
     "@heroicons/react": "^2.2.0",
+    "@swup/astro": "^1.7.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "artplayer": "^5.2.3",

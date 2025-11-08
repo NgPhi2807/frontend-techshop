@@ -120,7 +120,7 @@ export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
     <>
       {/* Sử dụng isVisible để điều khiển hiển thị */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-50 m-2 mx-2 max-w-screen-lg rounded-lg border bg-white p-4 shadow-xl transition-transform duration-300 ease-in-out lg:mx-auto ${
+        className={`fixed bottom-0 left-0 right-0 z-49 m-2 mx-2 max-w-screen-lg rounded-lg border bg-white p-4 shadow-xl transition-transform duration-300 ease-in-out lg:mx-auto ${
           isVisible
             ? "translate-y-0 opacity-100" // Hiện: Dịch chuyển về vị trí ban đầu
             : "pointer-events-none translate-y-full opacity-0" // Ẩn: Dịch chuyển ra khỏi màn hình

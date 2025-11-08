@@ -1,24 +1,27 @@
 import React from "react";
+import banner1 from "/src/assets/Camp-laptop-T9_Right-banner-1.webp";
+import banner2 from "/src/assets/AW11-right-banner.webp";
+import banner3 from "/src/assets/Right-S25-FE.webp";
 
 const bottomBannerData = [
   {
     id: 0,
-    src: "/src/assets/Camp-laptop-T9_Right-banner-1.webp",
+    src: banner1.src, 
     alt: "Bottom Banner 1",
   },
   {
     id: 1,
-    src: "/src/assets/AW11-right-banner.webp",
+    src: banner2.src, 
     alt: "Bottom Banner 2",
   },
   {
     id: 2,
-    src: "/src/assets/Right-S25-FE.webp",
+    src: banner3.src, 
     alt: "Bottom Banner 3",
   },
   {
     id: 3,
-    src: "/src/assets/Right-S25-FE.webp",
+    src: banner3.src,
     alt: "Bottom Banner 3",
   },
 ];
