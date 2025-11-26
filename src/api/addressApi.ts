@@ -1,7 +1,5 @@
-// src/api/addressApi.ts
 
-const API_BASE_URL = "http://localhost:8080";
-
+const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 export interface AddressPayload {
     id?: number; 
     line: string;
@@ -22,7 +20,7 @@ export const postAddressApi = async (
         throw new Error("Lỗi xác thực: Không tìm thấy Access Token.");
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/customer/my-address`, {
+    const response = await fetch(`${BASE_URL}/api/customer/my-address`, {
         method: "POST",
         headers: {
             accept: "*/*",
@@ -45,7 +43,6 @@ export const postAddressApi = async (
     }
 };
 
-// Hàm DELETE (Xóa)
 export const deleteAddressApi = async (
     addressId: number,
     accessToken: string,
@@ -53,7 +50,7 @@ export const deleteAddressApi = async (
     if (!accessToken) {
         throw new Error("Lỗi xác thực: Không tìm thấy Access Token.");
     }
-    const response = await fetch(`${API_BASE_URL}/api/customer/my-address/${addressId}`, {
+    const response = await fetch(`${BASE_URL}/api/customer/my-address/${addressId}`, {
         method: "DELETE",
         headers: {
             accept: "*/*",
@@ -74,7 +71,6 @@ export const deleteAddressApi = async (
     }
 };
 
-// Hàm PUT (Cập nhật)
 export const updateAddressApi = async (
     payload: AddressPayload,
     accessToken: string,
@@ -86,7 +82,7 @@ export const updateAddressApi = async (
         throw new Error("Lỗi cập nhật: Cần có ID địa chỉ để cập nhật (PUT).");
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/customer/my-address`, {
+    const response = await fetch(`${BASE_URL}/api/customer/my-address`, {
         method: "PUT", 
         headers: {
             accept: "*/*",
