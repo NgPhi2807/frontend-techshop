@@ -1,6 +1,8 @@
 
+const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+
 export async function fetchRelatedProducts(lastSlug: string): Promise<any[] | null> {
-  const baseUrl = `http://localhost:8080/api/public/product/filter`;
+  const baseUrl = `${BASE_URL}/api/public/product/filter`;
   const apiUrl = `${baseUrl}/${lastSlug}`;
 
   try {

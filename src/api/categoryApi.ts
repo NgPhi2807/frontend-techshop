@@ -1,6 +1,8 @@
 
+const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+
 export async function fetchBrandCategory(categorySlug: string) {
-  const apiUrl = `http://localhost:8080/api/public/category/${categorySlug}?type=brand`;
+  const apiUrl = `${BASE_URL}/api/public/category/${categorySlug}?type=brand`;
 
   try {
     const response = await fetch(apiUrl);
@@ -18,7 +20,7 @@ export async function fetchBrandCategory(categorySlug: string) {
 }
 
 export async function fetchFeatureCategory(categorySlug: string) {
-  const apiUrl = `http://localhost:8080/api/public/category/${categorySlug}?type=feature`;
+  const apiUrl = `${BASE_URL}/api/public/category/${categorySlug}?type=feature`;
 
   try {
     const response = await fetch(apiUrl);
@@ -36,7 +38,7 @@ export async function fetchFeatureCategory(categorySlug: string) {
 }
 
 export async function fetchSeriesCategory(categorySlug: string) {
-  const apiUrl = `http://localhost:8080/api/public/category/${categorySlug}`;
+  const apiUrl = `${BASE_URL}/api/public/category/${categorySlug}`;
 
   try {
     const response = await fetch(apiUrl);

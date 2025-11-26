@@ -10,7 +10,7 @@ interface ApiResponse<T> { code: number; timestamp: string; data: T; }
 interface PaginationState { page: number; size: number; totalPages: number; }
 
 // --- 2. Constants ---
-const API_BASE_URL = "http://localhost:8080/api/customer/my-order";
+const API_BASE_URL = "https://api.motchillx.site/api/customer/my-order";
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL; 
 const TOKEN_STORAGE_KEY = "accessToken";
 
@@ -181,17 +181,12 @@ const MyOrders: React.FC = () => {
     
   }, [apiOrders, inputSearch]); 
 
-  // 4. Effect để gọi API (Chạy khi tab, page thay đổi)
   useEffect(() => {
     if (!accessToken) return;
-    
-    // Nếu đang tìm kiếm, ta không gọi lại API khi inputSearch thay đổi 
     if (inputSearch.trim()) {
         return; 
     }
-
     fetchOrders(pagination.page, orderStatus);
-
   }, [fetchOrders, orderStatus, pagination.page, accessToken, inputSearch]);
 
   useEffect(() => {
@@ -199,7 +194,6 @@ const MyOrders: React.FC = () => {
         setPagination(p => ({ ...p, page: 1 }));
     }
   }, [inputSearch]);
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputSearch(e.target.value);
@@ -220,9 +214,7 @@ const MyOrders: React.FC = () => {
       setPagination((p) => ({ ...p, page: newPage }));
     }
   };
-
   const isSearching = !!inputSearch.trim();
-
   return (
     <div className="">
       <div className="">

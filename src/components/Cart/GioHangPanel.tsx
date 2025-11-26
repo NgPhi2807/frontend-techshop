@@ -27,10 +27,8 @@ const calculateCartTotals = (items: CalculableItem[]) => {
     0,
   );
   const tongKhuyenMai = tongTien - canThanhToan;
-
   const giamGiaSanPham = tongKhuyenMai;
   const voucher = 0;
-  const diemThuong = 4247;
 
   return {
     tongTien,
@@ -38,7 +36,7 @@ const calculateCartTotals = (items: CalculableItem[]) => {
     giamGiaSanPham,
     voucher,
     canThanhToan,
-    diemThuong,
+   
   };
 };
 
@@ -128,7 +126,7 @@ export const GioHangPanel: React.FC = () => {
         </div>
         <div className="hidden basis-[40%] p-2 sm:block">
           <img
-            src={emptycart.default || emptycart.src || emptycart}
+            src={emptycart.src}
             className="h-full w-full object-cover px-2 lg:px-12"
             alt="Giỏ hàng trống"
           />

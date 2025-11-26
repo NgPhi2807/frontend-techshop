@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useCartStore } from "../../stores/cartStore";
-import { formatCurrency } from "../../utils/currency";
 import AddressFilterPanel from "./AddressFilterPanel";
 import PaymentMethodSelection from "./PaymentMethodSelection";
 import OrderItemsSummary from "./OrderItemsSummary";
@@ -38,7 +37,6 @@ interface Totals {
   giamGiaSanPham: number;
   voucher: number;
   canThanhToan: number;
-  diemThuong: number;
 }
 interface CheckoutPanelProps {
   totals: Totals;
@@ -68,7 +66,7 @@ export const CheckoutPanel: React.FC<CheckoutPanelProps> = ({
   const [deliveryMethod, setDeliveryMethod] = useState<"ship" | "pickup">(
     "ship",
   );
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "bank">("cod");
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "BANK">("COD");
   const [customerInfo, setCustomerInfo] = useState({
     fullName: "nhp",
     phone: "0832676515",

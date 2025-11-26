@@ -1,6 +1,8 @@
 
+const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
+
 export async function fetchBreadcrumb(categorySlug: string) {
-  const apiUrl = `http://localhost:8080/api/public/category/${categorySlug}`;
+  const apiUrl = `${BASE_URL}/api/public/category/${categorySlug}`;
 
   try {
     const response = await fetch(apiUrl);

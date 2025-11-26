@@ -1,6 +1,7 @@
 import { create } from "zustand";
 const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 const API_REFRESH_URL = `${BASE_URL}/api/public/auth/refresh_token`;
+
 const REFRESH_INTERVAL = 29 * 60 * 1000;
 interface TokenState {
   lastRefresh: number | null;

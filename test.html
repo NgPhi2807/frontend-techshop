@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket STOMP Test (WSS - Không dùng SockJS)</title>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9fafb;
+            padding: 20px;
+        }
+
+        #log {
+            background: #fff;
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        input,
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>🧩 Test WebSocket STOMP (WSS - WebSocket thuần)</h2>
+
+    <div>
+        <button onclick="connect()">Kết nối</button>
+        <button onclick="disconnect()">Ngắt kết nối</button>
+    </div>
+
+    <div>
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." style="width:250px;">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+
+    <h3>📡 Log realtime:</h3>
+    <div id="log"></div>
+
+    <script>
+        let stompClient = null;
+        let subscribed = false;
+
+        function log(message) {
+            const logDiv = document.getElementById("log");
+            logDiv.innerHTML += message + "<br>";
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function connect() {
+            if (stompClient && stompClient.connected) {
+                log("⚠️ Đã kết nối rồi!");
+                return;
+            }
+
+            const ws = new WebSocket("wss://api.motchillx.site/ws/public"); // ⭐ WebSocket thuần
+
+            stompClient = Stomp.over(ws);
+            stompClient.debug = null;
+
+            stompClient.connect({}, frame => {
+                log("✅ Kết nối thành công: " + frame);
+
+                if (!subscribed) {
+                    stompClient.subscribe("/topic/132", msg => {
+                        log("📩 Nhận: " + msg.body);
+                    });
+                    subscribed = true;
+                    log("🛰️ Đã subscribe /topic/132");
+                }
+
+            }, error => {
+                log("❌ Lỗi kết nối: " + error);
+            });
+        }
+
+        function sendMessage() {
+            const msg = document.getElementById("messageInput").value;
+
+            if (!stompClient || !stompClient.connected) {
+                log("⚠️ Chưa kết nối WebSocket!");
+                return;
+            }
+
+            stompClient.send("/app/chat", {}, msg);
+            log("📤 Gửi: " + msg);
+            document.getElementById("messageInput").value = "";
+        }
+
+        function disconnect() {
+            if (stompClient && stompClient.connected) {
+                stompClient.disconnect(() => {
+                    log("🔌 Đã ngắt kết nối");
+                });
+                subscribed = false;
+                stompClient = null;
+            } else {
+                log("⚠️ Không có kết nối!");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

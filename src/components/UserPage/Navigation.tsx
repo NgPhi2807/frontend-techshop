@@ -39,7 +39,7 @@ const primaryNavItems: NavItem[] = [
   {
     icon: Heart,
     text: "Sản phẩm yêu thích",
-    href: "/tai-khoan/yeu-thich",
+    href: "/tai-khoan/san-pham-yeu-thich",
   },
 ];
 

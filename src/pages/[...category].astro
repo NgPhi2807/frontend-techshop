@@ -8,7 +8,6 @@ import ProductList from "../components/ProductLists/ProductList";
 import BrandCategory from "../components/ListCategory/SeriesCategory";
 import Footer from "../components/Footer/Footer";
 
-
 const { category } = Astro.params;
 const filter = await fetchFilter(category ?? "");
 const breadcrumbData = await fetchBreadcrumb(category ?? "");

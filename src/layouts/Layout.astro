@@ -1,7 +1,7 @@
 ---
 import ToastProvider from "../components/Toast/ToastProvider";
 import "../styles/global.css";
-import AuthChecker from "../hooks/useAuthChecker"; 
+import AuthChecker from "../hooks/useAuthChecker";
 import MobileNav from "../components/MobileNav";
 import Footer from "../components/Footer/Footer";
 ---
@@ -19,7 +19,11 @@ import Footer from "../components/Footer/Footer";
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
+    <script
+      src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"
+    ></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -28,10 +32,9 @@ import Footer from "../components/Footer/Footer";
   </head>
   <body class="bg-gray-100 font-sans">
     <ToastProvider client:idle>
-       <MobileNav client:idle />
+      <MobileNav client:idle />
       <AuthChecker client:load />
       <slot />
     </ToastProvider>
   </body>
-  
 </html>

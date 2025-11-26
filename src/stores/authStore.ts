@@ -3,7 +3,6 @@ import { create } from "zustand";
 import Cookies from "js-cookie";
 
 import { loginApi, registerApi, refreshTokenApi, resetPasswordApi } from "../api/authApi"; 
-
 const REFRESH_TIMEOUT = 29 * 60 * 1000; // 29 minutes
 const COOKIE_EXPIRY_DAYS = 7; 
 
@@ -219,7 +218,6 @@ export const useAuthStore = create<AuthState>((set, get) => {
             _removeAuthTokens(); 
             set({ isAuthenticated: false, loginLoading: false, registerLoading: false });
             
-            // THAY ĐỔI: Chuyển hướng về trang chủ (/)
             if (typeof window !== "undefined") {
                 window.location.replace("/");
             }

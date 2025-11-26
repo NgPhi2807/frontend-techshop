@@ -1,14 +1,10 @@
-// api/reviewApi.ts
 import axios from "axios";
+const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 
-// Giả định bạn đã định nghĩa biến môi trường này
-const BASE_URL = "http://localhost:8080/api"; 
-
-// --- HÀM TẢI ĐÁNH GIÁ (ĐÃ ĐƯỢC CHUYỂN SANG DÙNG AXIOS) ---
 export async function fetchProductReviews(
  productId: number | string,
 ) {
- const response = await axios.get(`${BASE_URL}/public/product/review`, {
+ const response = await axios.get(`${BASE_URL}/api/public/product/review`, {
   params: {
    size: 10,
    page: 1,
@@ -19,12 +15,7 @@ export async function fetchProductReviews(
  return response.data;
 }
 
-// ----------------------------------------------------------------------
 
-/**
- * Gửi đánh giá sản phẩm lên API.
- * ❌ Đã loại bỏ mọi lệnh console.log/alert/toast
- */
 export const submitReview = async (
  productId: number,
  rating: number,
@@ -34,18 +25,14 @@ export const submitReview = async (
 ) => {
  const formData = new FormData();
  
- // Đảm bảo productId được gửi trong form data (Thực hành tốt)
  formData.append('productId', productId.toString());
- 
  formData.append('rating', rating.toString());
  formData.append('content', content);
  
- // Thêm các file ảnh vào FormData
  medias.forEach((file) => {
   formData.append('medias', file, file.name); 
  });
 
- // Gửi request POST
  return axios.post(
   `${BASE_URL}/interaction/review/${productId}`,
   formData,
@@ -55,6 +42,5 @@ export const submitReview = async (
    },
   }
  );
- // Lưu ý: Nếu alert vẫn còn xuất hiện, nó phải ở trong hàm onSuccess() 
- // trong component gọi ReviewModal, hoặc logic được gọi sau đó.
+
 };

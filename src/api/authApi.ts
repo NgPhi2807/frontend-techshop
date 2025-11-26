@@ -1,4 +1,3 @@
-// auth-api.ts
 
 const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 const API_LOGIN_URL = `${BASE_URL}/api/public/auth/login`;

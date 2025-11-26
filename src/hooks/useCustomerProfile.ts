@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 
-// --- Interfaces ---
 
-/** Kiểu dữ liệu người dùng từ API */
 export interface UserData {
   id: number;
   name: string;
@@ -21,7 +19,6 @@ export interface UserData {
   addresses: any[];
 }
 
-/** Kiểu dữ liệu phản hồi API */
 export interface ApiResponse<T> {
   code: number;
   timestamp: string;
@@ -29,14 +26,12 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-/** Kiểu trả về của Hook */
 export interface ProfileHook {
   response: ApiResponse<UserData> | null;
   loading: boolean;
   error: string | null;
 }
 
-// --- API Endpoint ---
 const API_URL =
   "https://obscure-spoon-4j65gr6xqv5x3jj6-8080.app.github.dev/api/customer/profile";
 

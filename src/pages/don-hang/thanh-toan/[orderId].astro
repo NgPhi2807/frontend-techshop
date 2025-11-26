@@ -1,9 +1,9 @@
 ---
+export const prerender = false;
 const { orderId } = Astro.params;
 import OrderRouterWrapper from "../../../components/Cart/OrderRouterWrapper";
 import Layout from "../../../layouts/Layout.astro";
 import HeaderMain from "../../../components/Header/Header";
-import HeaderTopBar from "../../../components/Header/HeaderTopBar";
 
 if (!orderId) {
   return Astro.redirect("/404");

@@ -2,20 +2,52 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { updateServerCartQuantity, fetchMyCart } from "../api/cartApi";
 
+// --- 1. INTERFACES ĐÃ CẬP NHẬT THEO CẤU TRÚC API ---
+
 interface PaymentInfo {
-    type: string; label: string; bankAccountNumber?: string;
-    bankAccountName?: string; bankName?: string; transferContent?: string;
-    qrCodeUrl?: string; expireAt?: string; lifeTime?: string; 
+    type: string; 
+    label: string; 
+    bankAccountNumber?: string;
+    bankAccountName?: string; 
+    bankName?: string;
+    transferContent?: string;
+    qrCodeUrl?: string; 
+    expireAt?: string; 
+    lifeTime?: string; 
 }
 
+/**
+ * Mô tả cấu trúc của đối tượng "data" trong phản hồi API đặt hàng
+ * Phù hợp với: { ..., "data": { ... } }
+ */
 export interface OrderResponseData {
-    orderId: number; amount: number; message: string;
+    orderId: number;
+    // Cập nhật các trường về số tiền để khớp với data mẫu
+    grossAmount: number;     // Tổng tiền hàng
+    directDiscount: number;  // Chiết khấu trực tiếp
+    voucherDiscount: number; // Chiết khấu voucher
+    totalAmount: number;     // Tổng tiền cuối cùng cần thanh toán
+    message: string;
     paymentInfo: PaymentInfo & {
+        // Trường tính toán nội bộ cho logic hết hạn
         _calculatedExpireTime?: number; 
-         type: string,
-         label: string 
+        type: string,
+        label: string 
     };
 }
+
+/**
+ * Mô tả cấu trúc chung của phản hồi từ API
+ * Phù hợp với: { "code": 1000, "timestamp": "...", "data": { ... } }
+ */
+export interface ApiResponse<T> {
+    code: number;
+    timestamp: string;
+    data: T;
+}
+
+
+// --- 2. CÁC UTILS KHÔNG ĐỔI ---
 
 const timeToSeconds = (timeStr: string): number => {
     const parts = timeStr.split(":").map(Number);
@@ -25,6 +57,9 @@ const timeToSeconds = (timeStr: string): number => {
     }
     return 0;
 };
+
+
+// --- 3. CÁC INTERFACES CỦA CART ITEM ---
 
 interface CartItem {
     variantId: number;
@@ -43,6 +78,9 @@ interface AddVariant {
     id: number; sku: string; price: number; basePrice: number;
     color: string; thumbnail: string; availableStock: number; 
 }
+
+
+// --- 4. INTERFACE VÀ IMPLEMENTATION CỦA ZUSTAND STORE ---
 
 interface CartState {
     items: CartItem[];
@@ -63,6 +101,7 @@ interface CartState {
     removeSelectedItems: () => void;
     setCheckoutItems: (selectedItems: Omit<CartItem, "isSelected">[]) => void;
     toggleCheckoutMode: (isCheckingOut: boolean) => void;
+    // orderData ở đây là OrderResponseData đã được cập nhật
     finalizeOrder: (orderId: number, orderData: OrderResponseData) => void; 
     clearCheckoutItems: () => void;
     clearOrderData: () => void; 
@@ -147,7 +186,7 @@ export const useCartStore = create<CartState>()(
                 
                     if (item && quantity > item.availableStock) {
                         console.warn(`Số lượng mới vượt quá tồn kho (${item.availableStock}). Đặt lại thành ${item.availableStock}.`);
-                        finalQuantity = item.availableStock; // Giới hạn số lượng bằng tồn kho
+                        finalQuantity = item.availableStock; 
                     } else {
                         finalQuantity = quantity;
                     }
@@ -157,11 +196,11 @@ export const useCartStore = create<CartState>()(
                             i.variantId === variantId ? { ...i, quantity: finalQuantity } : i
                         ),
                     }));
-                } else { // quantity <= 0 (removal)
+                } else {
                     set((state) => ({
                         items: state.items.filter((i) => i.variantId !== variantId),
                     }));
-                    finalQuantity = 0; // Để gửi lên server là xóa
+                    finalQuantity = 0; 
                 }
 
                 if (token) {

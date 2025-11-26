@@ -1,7 +1,7 @@
 import React from "react";
 interface PaymentMethodSelectionProps {
-  paymentMethod: "cod" | "bank";
-  setPaymentMethod: React.Dispatch<React.SetStateAction<"cod" | "bank">>;
+  paymentMethod: "COD" | "BANK";
+  setPaymentMethod: React.Dispatch<React.SetStateAction<"COD" | "BANK">>;
 }
 const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
   paymentMethod,
@@ -15,7 +15,7 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
       <div className="flex flex-col space-y-3">
         <label
           className={`flex cursor-pointer items-center rounded-lg border-2 p-4 transition duration-200 ${
-            paymentMethod === "cod"
+            paymentMethod === "COD"
               ? "border-red-600 bg-red-50 shadow-md"
               : "border-gray-300 hover:border-red-500"
           }`}
@@ -25,14 +25,14 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
             type="radio"
             id="payment-cod"
             name="payment"
-            checked={paymentMethod === "cod"}
-            onChange={() => setPaymentMethod("cod")}
+            checked={paymentMethod === "COD"}
+            onChange={() => setPaymentMethod("COD")}
             className="hidden" // Ẩn radio button gốc
           />
 
           <svg
             className={`mr-3 h-6 w-6 flex-shrink-0 ${
-              paymentMethod === "cod" ? "text-red-600" : "text-gray-500"
+              paymentMethod === "COD" ? "text-red-600" : "text-gray-500"
             }`}
             xmlns="http://www.w3.org/2000/svg"
             width="56"
@@ -57,12 +57,12 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
           {/* Hiển thị dấu check tùy chỉnh */}
           <div
             className={`ml-4 flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-              paymentMethod === "cod"
+              paymentMethod === "COD"
                 ? "border-red-600 bg-red-600"
                 : "border-gray-300"
             }`}
           >
-            {paymentMethod === "cod" && (
+            {paymentMethod === "COD" && (
               <div className="h-2 w-2 rounded-full bg-white"></div>
             )}
           </div>
@@ -70,7 +70,7 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
 
         <label
           className={`flex cursor-pointer items-center rounded-lg border-2 p-4 transition duration-200 ${
-            paymentMethod === "bank"
+            paymentMethod === "BANK"
               ? "border-red-600 bg-red-50 shadow-md"
               : "border-gray-300 hover:border-red-500"
           }`}
@@ -80,14 +80,14 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
             type="radio"
             id="payment-bank"
             name="payment"
-            checked={paymentMethod === "bank"}
-            onChange={() => setPaymentMethod("bank")}
+            checked={paymentMethod === "BANK"}
+            onChange={() => setPaymentMethod("BANK")}
             className="hidden" // Ẩn radio button gốc
           />
 
           <svg
             className={`mr-3 h-6 w-6 flex-shrink-0 ${
-              paymentMethod === "bank" ? "text-red-600" : "text-gray-500"
+              paymentMethod === "BANK" ? "text-red-600" : "text-gray-500"
             }`}
             fill="none"
             stroke="currentColor"
@@ -112,12 +112,12 @@ const PaymentMethodSelection: React.FC<PaymentMethodSelectionProps> = ({
 
           <div
             className={`ml-4 flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-              paymentMethod === "bank"
+              paymentMethod === "BANK"
                 ? "border-red-600 bg-red-600"
                 : "border-gray-300"
             }`}
           >
-            {paymentMethod === "bank" && (
+            {paymentMethod === "BANK" && (
               <div className="h-2 w-2 rounded-full bg-white"></div>
             )}
           </div>
