@@ -1,8 +1,6 @@
-      // src/api/cartApi.ts
 
 const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 
-// Định nghĩa cấu trúc dữ liệu cơ bản cho CartItem để sử dụng trong hàm fetch
 interface CartItemFromServer {
  variantId: number;
  sku: string;
@@ -16,9 +14,7 @@ interface CartItemFromServer {
  availableStock: number; // <-- TRƯỜNG MỚI: Số lượng tồn kho
 }
 
-/**
- * Gửi yêu cầu thêm/cập nhật/xóa (quantity = 0) lên server.
- */
+
 export const updateServerCartQuantity = async (
  variantId: number,
  quantity: number, // Quantity là 0 để xóa sản phẩm

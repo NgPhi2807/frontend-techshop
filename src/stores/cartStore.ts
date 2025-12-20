@@ -2,44 +2,34 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { updateServerCartQuantity, fetchMyCart } from "../api/cartApi";
 
-// --- 1. INTERFACES ĐÃ CẬP NHẬT THEO CẤU TRÚC API ---
 
 interface PaymentInfo {
-    type: string; 
-    label: string; 
+    type: string;
+    label: string;
     bankAccountNumber?: string;
-    bankAccountName?: string; 
+    bankAccountName?: string;
     bankName?: string;
     transferContent?: string;
-    qrCodeUrl?: string; 
-    expireAt?: string; 
-    lifeTime?: string; 
+    qrCodeUrl?: string;
+    expireAt?: string;
+    lifeTime?: string;
 }
 
-/**
- * Mô tả cấu trúc của đối tượng "data" trong phản hồi API đặt hàng
- * Phù hợp với: { ..., "data": { ... } }
- */
 export interface OrderResponseData {
     orderId: number;
-    // Cập nhật các trường về số tiền để khớp với data mẫu
-    grossAmount: number;     // Tổng tiền hàng
+    grossAmount: number;    // Tổng tiền hàng
     directDiscount: number;  // Chiết khấu trực tiếp
     voucherDiscount: number; // Chiết khấu voucher
     totalAmount: number;     // Tổng tiền cuối cùng cần thanh toán
     message: string;
     paymentInfo: PaymentInfo & {
-        // Trường tính toán nội bộ cho logic hết hạn
-        _calculatedExpireTime?: number; 
+        _calculatedExpireTime?: number;
         type: string,
-        label: string 
+        label: string
     };
 }
 
-/**
- * Mô tả cấu trúc chung của phản hồi từ API
- * Phù hợp với: { "code": 1000, "timestamp": "...", "data": { ... } }
- */
+
 export interface ApiResponse<T> {
     code: number;
     timestamp: string;
@@ -47,7 +37,6 @@ export interface ApiResponse<T> {
 }
 
 
-// --- 2. CÁC UTILS KHÔNG ĐỔI ---
 
 const timeToSeconds = (timeStr: string): number => {
     const parts = timeStr.split(":").map(Number);
@@ -59,39 +48,37 @@ const timeToSeconds = (timeStr: string): number => {
 };
 
 
-// --- 3. CÁC INTERFACES CỦA CART ITEM ---
 
-interface CartItem {
+export interface CartItem {
     variantId: number;
     sku: string;
-    name: string;
+    name: string; // ✅ Đã có trường name để lưu tên sản phẩm
     price: number;
     basePrice: number;
     color: string;
     thumbnail: string;
     quantity: number;
     isSelected: boolean;
-    availableStock: number; 
+    availableStock: number;
 }
 
 interface AddVariant {
     id: number; sku: string; price: number; basePrice: number;
-    color: string; thumbnail: string; availableStock: number; 
+    color: string; thumbnail: string; availableStock: number;
 }
 
 
-// --- 4. INTERFACE VÀ IMPLEMENTATION CỦA ZUSTAND STORE ---
 
 interface CartState {
     items: CartItem[];
     checkoutItems: Omit<CartItem, "isSelected">[];
     isCheckingOut: boolean;
     lastPlacedOrderId: number | null;
-    lastOrderData: OrderResponseData | null; 
+    lastOrderData: OrderResponseData | null;
     fetchServerCart: () => Promise<void>;
     addItem: (
         variant: AddVariant,
-        productName: string,
+        productName: string, // ✅ Nhận productName từ component
         quantity?: number
     ) => Promise<void>;
     updateItemQuantity: (variantId: number, quantity: number) => Promise<void>;
@@ -101,10 +88,9 @@ interface CartState {
     removeSelectedItems: () => void;
     setCheckoutItems: (selectedItems: Omit<CartItem, "isSelected">[]) => void;
     toggleCheckoutMode: (isCheckingOut: boolean) => void;
-    // orderData ở đây là OrderResponseData đã được cập nhật
-    finalizeOrder: (orderId: number, orderData: OrderResponseData) => void; 
+    finalizeOrder: (orderId: number, orderData: OrderResponseData) => void;
     clearCheckoutItems: () => void;
-    clearOrderData: () => void; 
+    clearOrderData: () => void;
 }
 
 
@@ -115,14 +101,15 @@ export const useCartStore = create<CartState>()(
             checkoutItems: [],
             isCheckingOut: false,
             lastPlacedOrderId: null,
-            lastOrderData: null, 
+            lastOrderData: null,
 
             fetchServerCart: async () => {
                 const token = localStorage.getItem("accessToken");
                 if (!token) return;
-                const serverItems = await fetchMyCart(token); 
+                const serverItems = await fetchMyCart(token);
                 if (serverItems) {
-                    set({ items: serverItems as CartItem[] });
+                    // Cần đảm bảo server trả về trường 'name' để không mất dữ liệu
+                    set({ items: serverItems as CartItem[] }); 
                     console.log("✅ Giỏ hàng đã đồng bộ từ server:", serverItems);
                 } else {
                     console.error("❌ Lỗi lấy giỏ hàng server: Không nhận được dữ liệu.");
@@ -140,7 +127,7 @@ export const useCartStore = create<CartState>()(
 
                     if (newTotalQuantity > existingItem.availableStock) {
                         quantityToUpdate = existingItem.availableStock - existingItem.quantity;
-                        
+
                         if (quantityToUpdate <= 0) {
                             console.warn(`Không thể thêm. Sản phẩm đã đạt hoặc vượt quá tồn kho (${existingItem.availableStock}).`);
                             return;
@@ -150,7 +137,7 @@ export const useCartStore = create<CartState>()(
 
                     set((state) => ({
                         items: state.items.map((i) =>
-                            i.variantId === variant.id ? { ...i, quantity: i.quantity + quantityToUpdate } : i
+                            i.variantId === variant.id ? { ...i, quantity: i.quantity + quantityToUpdate, name: productName } : i // Thêm cập nhật tên nếu cần
                         ),
                     }));
                 } else {
@@ -158,9 +145,9 @@ export const useCartStore = create<CartState>()(
                         console.warn(`Không thể thêm. Số lượng yêu cầu vượt quá tồn kho (${variant.availableStock}).`);
                         return;
                     }
-                    
+
                     const newItem: CartItem = {
-                        variantId: variant.id, sku: variant.sku, name: productName, price: variant.price,
+                        variantId: variant.id, sku: variant.sku, name: productName, price: variant.price, // ✅ name được lưu ở đây
                         basePrice: variant.basePrice, color: variant.color, thumbnail: variant.thumbnail,
                         quantity, isSelected: true,
                         availableStock: variant.availableStock,
@@ -169,7 +156,7 @@ export const useCartStore = create<CartState>()(
                 }
 
                 if (token) {
-                    const success = await updateServerCartQuantity(variant.id, quantityToUpdate, token); 
+                    const success = await updateServerCartQuantity(variant.id, quantityToUpdate, token);
                     if (!success) {
                         console.warn("⚠️ Thêm sản phẩm thất bại. Khôi phục trạng thái cũ.");
                         await get().fetchServerCart();
@@ -183,10 +170,10 @@ export const useCartStore = create<CartState>()(
                 let finalQuantity = quantity;
                 if (quantity > 0) {
                     const item = get().items.find(i => i.variantId === variantId);
-                
+
                     if (item && quantity > item.availableStock) {
                         console.warn(`Số lượng mới vượt quá tồn kho (${item.availableStock}). Đặt lại thành ${item.availableStock}.`);
-                        finalQuantity = item.availableStock; 
+                        finalQuantity = item.availableStock;
                     } else {
                         finalQuantity = quantity;
                     }
@@ -200,11 +187,11 @@ export const useCartStore = create<CartState>()(
                     set((state) => ({
                         items: state.items.filter((i) => i.variantId !== variantId),
                     }));
-                    finalQuantity = 0; 
+                    finalQuantity = 0;
                 }
 
                 if (token) {
-                    const success = await updateServerCartQuantity(variantId, finalQuantity, token); 
+                    const success = await updateServerCartQuantity(variantId, finalQuantity, token);
                     if (!success) {
                         console.warn("⚠️ Cập nhật thất bại. Đang khôi phục giỏ hàng từ server.");
                         await get().fetchServerCart();
@@ -245,12 +232,12 @@ export const useCartStore = create<CartState>()(
                     if (orderData.paymentInfo.lifeTime && !("_calculatedExpireTime" in orderData.paymentInfo)) {
                         const lifeTimeSeconds = timeToSeconds(orderData.paymentInfo.lifeTime);
                         const expireTimeMs = new Date().getTime() + lifeTimeSeconds * 1000;
-                        
+
                         updatedOrderData = {
                             ...orderData,
                             paymentInfo: {
                                 ...orderData.paymentInfo,
-                                _calculatedExpireTime: expireTimeMs, 
+                                _calculatedExpireTime: expireTimeMs,
                             },
                         };
                         console.log("💾 Đã tính toán và lưu mốc hết hạn cho F5:", new Date(expireTimeMs));
@@ -261,7 +248,7 @@ export const useCartStore = create<CartState>()(
                         checkoutItems: [],
                         isCheckingOut: false,
                         lastPlacedOrderId: orderId,
-                        lastOrderData: updatedOrderData, 
+                        lastOrderData: updatedOrderData,
                     };
                 }),
 
@@ -276,7 +263,7 @@ export const useCartStore = create<CartState>()(
                 checkoutItems: state.checkoutItems,
                 isCheckingOut: state.isCheckingOut,
                 lastPlacedOrderId: state.lastPlacedOrderId,
-                lastOrderData: state.lastOrderData, 
+                lastOrderData: state.lastOrderData,
             }),
         }
     )

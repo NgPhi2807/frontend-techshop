@@ -79,7 +79,7 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
 
       return {
         id: v.id,
-        colorName: colorAttr ? colorAttr.value : "Không màu",
+        colorName: colorAttr?.value ?? "Không màu", 
         thumbnail: v.thumbnail,
         price: variantCurrentPrice,
         originalPrice: variantBasePrice,
@@ -123,7 +123,8 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
       id: productData.id,
       name: productData.name,
       slug: productData.slug,
-      related_name: detail.storage || "Phiên bản này",
+      // Đảm bảo related_name có giá trị mặc định để tránh lỗi
+      related_name: detail.storage || "Phiên bản này", 
       thumbnail: productData.thumbnail,
     };
 
@@ -134,7 +135,8 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
         (item, index, self) =>
           index === self.findIndex((t) => t.related_name === item.related_name),
       )
-      .sort((a, b) => a.related_name.localeCompare(b.related_name));
+      // FIX LỖI: Dùng ?? "" để xử lý null/undefined khi so sánh
+      .sort((a, b) => (a.related_name ?? "").localeCompare(b.related_name ?? ""));
 
     return uniqueSiblings;
   }, [
@@ -147,11 +149,10 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
   ]);
 
   const handleAddToCart = useCallback(
-    async (shouldRedirect = false) => { // 🔑 THÊM ASYNC VÀO ĐÂY
+    async (shouldRedirect = false) => {
       if (currentVariant && !isOutOfStock) {
         setIsAdding(true);
 
-        // 🔑 KHÔNG SỬ DỤNG setTimeout, gọi thẳng await
         try {
           const variantPayload = {
             id: currentVariant.id,
@@ -160,19 +161,15 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
             basePrice: currentVariant.originalPrice,
             color: currentVariant.colorName,
             thumbnail: currentVariant.thumbnail,
-            // 🔑 SỬA LỖI CHÍNH TẢ: availebleStock -> availableStock
             availableStock: currentVariant.availableStock,
           };
           
-          // 🔑 SỬ DỤNG AWAIT KHI GỌI HÀM ASYNC TỪ STORE
           await addItemToCart(variantPayload, productData.name, 1);
 
           if (shouldRedirect) {
-            // 🔑 SỬA LỖI CÚ PHÁP TOAST MESSAGE
             toast.success(
               `✅ Đã thêm ${productData.name} - ${currentVariant.colorName} vào giỏ! Đang chuyển hướng...`,
             );
-            // Đảm bảo không reset isAdding/isSuccessfully nếu chuyển hướng ngay lập tức
             window.location.assign("/gio-hang"); 
           } else {
             toast.success(
@@ -187,8 +184,9 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
             console.error("Lỗi khi thêm vào giỏ hàng:", error);
             toast.error("❌ Lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
         } finally {
-            // Đảm bảo dừng trạng thái loading sau khi hoàn tất (thành công hoặc thất bại)
-            setIsAdding(false); 
+            if (!shouldRedirect) {
+              setIsAdding(false); 
+            }
         }
 
       } else if (isOutOfStock) {
@@ -200,10 +198,10 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
     [currentVariant, addItemToCart, productData.name, isOutOfStock],
   );
 
-  const handleBuyNow = useCallback(() => {
-    // Gọi handleAddToCart với shouldRedirect = true
-    handleAddToCart(true); 
+  const handleBuyNow = useCallback(async () => {
+    await handleAddToCart(true); 
   }, [handleAddToCart]);
+
 
   if (!currentVariant) {
     return (
@@ -253,9 +251,12 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
           <span className="text-2xl font-bold text-red-600">
             {formatCurrency(currentVariant.price)}
           </span>
-          <span className="text-base text-gray-400 line-through">
-            {formatCurrency(currentVariant.originalPrice)}
-          </span>
+          {/* 🔑 CHỈ HIỆN THỊ GIÁ GỐC NẾU KHÁC VỚI GIÁ BÁN HIỆN TẠI */}
+          {currentVariant.price !== currentVariant.originalPrice && (
+            <span className="text-base text-gray-400 line-through">
+              {formatCurrency(currentVariant.originalPrice)}
+            </span>
+          )}
         </div>
       </div>
       {allSiblings.length > 1 && (
@@ -264,23 +265,26 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
             Phiên bản
           </h3>
           <div className="flex flex-wrap gap-3">
+            {/* 🔑 Kiểm tra item.related_name trước khi hiển thị */}
             {allSiblings.map((item) => (
-              <a
-                key={item.slug}
-                href={`/san-pham/${item.slug}`}
-                className={`relative flex min-w-[120px] flex-col items-center justify-center rounded-lg px-4 py-2 text-left transition ${
-                  item.slug === currentSlug
-                    ? "border-2 border-red-600 bg-red-50 font-bold text-red-600 shadow-md"
-                    : "border-[1.5px] border-gray-300 bg-white font-medium text-gray-700 hover:border-red-300"
-                }`}
-              >
-                {item.slug === currentSlug && (
-                  <Check className="absolute -right-1 -top-1 h-4 w-4 rounded-full border border-red-600 bg-red-600 p-px text-white" />
-                )}
-                <span className="text-sm font-semibold">
-                  {item.related_name}
-                </span>
-              </a>
+              item.related_name && (
+                <a
+                  key={item.slug}
+                  href={`/san-pham/${item.slug}`}
+                  className={`relative flex min-w-[120px] flex-col items-center justify-center rounded-lg px-4 py-2 text-left transition ${
+                    item.slug === currentSlug
+                      ? "border-2 border-red-600 bg-red-50 font-bold text-red-600 shadow-md"
+                      : "border-[1.5px] border-gray-300 bg-white font-medium text-gray-700 hover:border-red-300"
+                  }`}
+                >
+                  {item.slug === currentSlug && (
+                    <Check className="absolute -right-1 -top-1 h-4 w-4 rounded-full border border-red-600 bg-red-600 p-px text-white" />
+                  )}
+                  <span className="text-sm font-semibold">
+                    {item.related_name}
+                  </span>
+                </a>
+              )
             ))}
           </div>
         </div>
@@ -331,9 +335,12 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
                         Hết hàng
                       </span>
                     ) : (
-                      <span className="text-sm font-semibold text-red-600">
-                        {formatCurrency(variant.price)}
-                      </span>
+                      // 🔑 CHỈ HIỆN THỊ GIÁ NẾU CÓ
+                      variant.price && (
+                        <span className="text-sm font-semibold text-red-600">
+                          {formatCurrency(variant.price)}
+                        </span>
+                      )
                     )}
                   </div>
                 </div>
@@ -382,6 +389,7 @@ export const ProductBuyBox: React.FC<ProductBuyBoxProps> = ({
         isAdding={isAdding}
         addedSuccessfully={addedSuccessfully}
         handleAddToCart={() => handleAddToCart(false)}
+        handleBuyNow={handleBuyNow}
       />
     </div>
   );

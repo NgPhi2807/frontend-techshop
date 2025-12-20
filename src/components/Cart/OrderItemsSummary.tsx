@@ -39,8 +39,8 @@ const OrderItemsSummary: React.FC<OrderItemsSummaryProps> = ({
               />
             </div>
 
-            <div>
-              <p className="text-sm font-semibold text-gray-800">{item.name}</p>
+            <div className="flex flex-col gap-2 ">
+              <p className="text-sm font-semibold text-gray-800">{item.sku}</p>
 
               <p className="text-xs text-gray-500">
                 Màu: {item.color} | SL: {item.quantity}

@@ -58,7 +58,7 @@ const USER_DROPDOWN_ITEMS: UserDropdownItem[] = [
     {
         id: 'orders',
         name: 'Đơn hàng của tôi',
-        href: '/tai-khoan/don-hang',
+        href: '/tai-khoan/don-hang-cua-toi',
         icon: ListChecks,
     },
     {

@@ -61,13 +61,11 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const handleQuantityChange = (delta: number) => {
     const newQuantity = quantity + delta;
 
-    // Nếu số lượng mới <= 0, thực hiện xóa sản phẩm
     if (newQuantity <= 0) {
       handleRemove();
       return;
     }
 
-    // Kiểm tra số lượng tối đa là 99 VÀ không vượt quá tồn kho
     const maxAllowedQuantity = Math.min(99, stock);
 
     if (newQuantity > maxAllowedQuantity) {
@@ -98,7 +96,6 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
   return (
     <div className="mb-3 rounded-lg border border-gray-100 bg-white p-4">
-      {/* Container chính: Mobile là flex-col, PC là flex-row và căn giữa theo chiều dọc */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
         <div className="flex flex-grow items-start gap-3 lg:w-3/5 lg:flex-grow-0">
           <button
@@ -138,10 +135,9 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
 
           <div className="min-w-0 flex-1">
             <h4 className="mb-1 line-clamp-2 text-sm font-normal text-gray-900">
-              {item.name}
+              {item.sku}
             </h4>
 
-            {/* THAY THẾ: Gộp thông tin Màu sắc và Tồn kho */}
             <div className="flex flex-col gap-1 sm:items-start sm:gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-600">Màu:</span>

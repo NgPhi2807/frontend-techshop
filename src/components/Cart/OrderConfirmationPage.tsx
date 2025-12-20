@@ -190,51 +190,74 @@ const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({
 
   useEffect(() => {
     const win = window as any;
-    if (!win.SockJS || !win.Stomp) return;
+    // Kiểm tra WebSocket và Stomp
+    if (!win.WebSocket || !win.Stomp) return; 
     if (isPaid) return;
-    const socket = new win.SockJS("https://api.motchillx.site/ws/public");
+
+    // 1. Dùng WebSocket thuần với WSS
+    const socket = new win.WebSocket("wss://api.motchillx.site/ws/public"); 
     const stompClient = win.Stomp.over(socket);
-    stompClient.connect({}, () => {
-      stompClient.subscribe(`/topic/${orderId}`, (msg: any) => {
-        console.log("📩 New Message:", msg.body);
-        let isSuccess = false;
-        const body = msg.body;
-        if (body === "PAID" || body === '"PAID"') {
-          isSuccess = true;
-        } else {
-          try {
-            const data = JSON.parse(body);
-            if (data?.status === "PAID" || data === "PAID") {
-              isSuccess = true;
+
+    // Tắt logging debug của STOMP
+    stompClient.debug = () => {}; 
+
+    stompClient.connect(
+      {},
+      () => {
+        stompClient.subscribe(`/topic/${orderId}`, (msg: any) => {
+          console.log("📩 New Message:", msg.body);
+          let isSuccess = false;
+          const body = msg.body;
+          if (body === "PAID" || body === '"PAID"') {
+            isSuccess = true;
+          } else {
+            try {
+              const data = JSON.parse(body);
+              if (data?.status === "PAID" || data === "PAID") {
+                isSuccess = true;
+              }
+            } catch (e) {
+              console.error("Parse error:", e);
             }
-          } catch (e) {
-            console.error("Parse error:", e);
           }
-        }
 
-        if (isSuccess) {
-          console.log("✅ Xác nhận thanh toán thành công!");
+          if (isSuccess) {
+            console.log("✅ Xác nhận thanh toán thành công!");
 
-          const expireTime = Date.now() + 5 * 60 * 1000; 
-          const statusData = {
-            status: "PAID",
-            expireAt: expireTime,
-          };
+            const expireTime = Date.now() + 5 * 60 * 1000; 
+            const statusData = {
+              status: "PAID",
+              expireAt: expireTime,
+            };
 
-          localStorage.setItem(
-            `paid_status_${orderId}`,
-            JSON.stringify(statusData),
-          );
+            localStorage.setItem(
+              `paid_status_${orderId}`,
+              JSON.stringify(statusData),
+            );
 
-          clearOrderData();
-          clearCheckoutItems();
-          setIsPaid(true);
-        }
-      });
-    });
+            clearOrderData();
+            clearCheckoutItems();
+            setIsPaid(true);
+          }
+        });
+      },
+      // Thêm hàm xử lý lỗi kết nối
+      (error: any) => {
+        console.error("STOMP Connection Error:", error);
+      }
+    );
 
     return () => {
-      if (stompClient && stompClient.connected) stompClient.disconnect();
+      // Đóng kết nối STOMP khi component unmount hoặc dependencies thay đổi
+      try {
+        if (stompClient && stompClient.connected) {
+            stompClient.disconnect(() => {
+                console.log("STOMP Disconnected.");
+            });
+        }
+      } catch (e) {
+        console.error("Error during STOMP disconnect:", e);
+      }
     };
   }, [orderId, clearOrderData, clearCheckoutItems, isPaid]);
 
@@ -591,7 +614,7 @@ const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({
                       Phương thức: {paymentInfo?.label || "Thanh toán khác"}
                     </p>
                     <p className="mt-3 text-lg">
-                      Bạn sẽ thanh toán **{formatCurrency(finalAmount)}** khi
+                      Bạn sẽ thanh toán {formatCurrency(finalAmount)} khi
                       nhận hàng.
                     </p>
                     <p className="mt-2 text-sm text-green-700">

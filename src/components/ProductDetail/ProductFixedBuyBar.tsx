@@ -1,6 +1,4 @@
-// ProductFixedBuyBar.tsx
-
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { Check, ShoppingCart, Loader2 } from "lucide-react";
 
 interface ColorVariant {
@@ -30,6 +28,8 @@ interface ProductFixedBuyBarProps {
   isAdding: boolean;
   addedSuccessfully: boolean;
   handleAddToCart: () => void;
+  // 🔑 Thêm prop Mua Ngay (dự kiến là async)
+  handleBuyNow: () => Promise<void>; 
 }
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL || "";
 const formatCurrency = (amount: number): string => {
@@ -40,8 +40,6 @@ const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
-// Đặt ngưỡng đệm (buffer) tính từ cuối trang.
-// Thanh sẽ biến mất khi người dùng cách cuối trang 300px.
 const SCROLL_BUFFER = 300;
 
 export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
@@ -51,21 +49,21 @@ export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
   isAdding,
   addedSuccessfully,
   handleAddToCart,
+  // 🔑 Nhận prop mới
+  handleBuyNow,
 }) => {
-  // ✅ Mặc định isVisible là TRUE
   const [isVisible, setIsVisible] = useState(true);
+  // 🔑 State riêng cho nút Mua Ngay
+  const [isBuying, setIsBuying] = useState(false); 
 
-  // Logic theo dõi sự kiện cuộn để ẩn thanh khi gần cuối trang
   useEffect(() => {
     const toggleVisibility = () => {
       const scrollHeight = document.documentElement.scrollHeight;
       const scrollTop = document.documentElement.scrollTop;
       const clientHeight = document.documentElement.clientHeight;
 
-      // Tính toán khoảng cách từ vị trí hiện tại đến cuối trang
       const distanceFromBottom = scrollHeight - clientHeight - scrollTop;
 
-      // ✅ Đảo ngược logic: Ẩn thanh khi người dùng cuộn đến gần cuối (ví dụ: cách 300px)
       if (distanceFromBottom <= SCROLL_BUFFER) {
         setIsVisible(false); // Ẩn thanh
       } else {
@@ -75,14 +73,29 @@ export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
 
     window.addEventListener("scroll", toggleVisibility);
 
-    // Chạy lần đầu để kiểm tra
     toggleVisibility();
 
-    // Dọn dẹp: Gỡ bỏ event listener khi component unmount
     return () => {
       window.removeEventListener("scroll", toggleVisibility);
     };
   }, []);
+  
+  // 🔑 Hàm xử lý Mua Ngay: Gọi handleBuyNow được truyền từ cha
+  const handleClickBuyNow = useCallback(async () => {
+    if (isOutOfStock || isBuying) return;
+
+    setIsBuying(true);
+    try {
+        await handleBuyNow(); 
+        // Logic chuyển hướng sẽ xảy ra trong handleBuyNow ở component cha
+    } catch (error) {
+        console.error("Lỗi khi mua ngay từ fixed bar:", error);
+    } finally {
+        // Nếu chuyển hướng không xảy ra, reset loading
+        setIsBuying(false); 
+    }
+  }, [handleBuyNow, isOutOfStock, isBuying]);
+
 
   const cartButtonContent = useMemo(() => {
     if (isOutOfStock) {
@@ -116,14 +129,25 @@ export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
     );
   }, [isAdding, addedSuccessfully, isOutOfStock]);
 
+  // 🔑 Logic hiển thị nội dung nút Mua Ngay
+  const buyNowButtonContent = useMemo(() => {
+    if (isOutOfStock) {
+        return <span className="text-sm font-bold">Hết hàng</span>;
+    }
+    if (isBuying) {
+        return <Loader2 size={18} className="animate-spin" strokeWidth={2.5} />;
+    }
+    return <span className="text-sm font-bold">Mua Ngay</span>;
+  }, [isBuying, isOutOfStock]);
+
+
   return (
     <>
-      {/* Sử dụng isVisible để điều khiển hiển thị */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-49 m-2 mx-2 max-w-screen-lg rounded-lg border bg-white p-4 shadow-xl transition-transform duration-300 ease-in-out lg:mx-auto ${
+        className={`fixed bottom-0 left-0 right-0 z-50 m-2 mx-2 max-w-screen-lg rounded-lg border bg-white p-4 shadow-xl transition-transform duration-300 ease-in-out lg:mx-auto ${
           isVisible
-            ? "translate-y-0 opacity-100" // Hiện: Dịch chuyển về vị trí ban đầu
-            : "pointer-events-none translate-y-full opacity-0" // Ẩn: Dịch chuyển ra khỏi màn hình
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-full opacity-0"
         } `}
       >
         <div className="">
@@ -154,14 +178,16 @@ export const ProductFixedBuyBar: React.FC<ProductFixedBuyBarProps> = ({
               </div>
               <div className="flex w-full flex-row justify-end gap-2 md:w-2/5">
                 <button
-                  disabled={isOutOfStock}
+                  // 🔑 Gắn sự kiện MUA NGAY đã cập nhật
+                  onClick={handleClickBuyNow} 
+                  disabled={isOutOfStock || isBuying}
                   className={`flex basis-3/5 flex-col items-center justify-center gap-1 rounded-lg py-2 font-bold text-white transition-all duration-300 ease-in-out md:basis-[70%] ${
-                    isOutOfStock
+                    isOutOfStock || isBuying
                       ? "cursor-not-allowed bg-gray-400 opacity-70"
                       : "bg-[linear-gradient(0deg,#d70018,#e45464)] hover:shadow-lg hover:shadow-red-400/40 active:scale-95"
                   }`}
                 >
-                  <span className="text-sm font-bold">Mua Ngay</span>
+                  {buyNowButtonContent}
                 </button>
                 <button
                   onClick={handleAddToCart}

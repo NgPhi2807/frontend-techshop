@@ -1,20 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
-// ⚠️ You'll need to install swiper: npm install swiper
 import { Swiper, SwiperSlide } from "swiper/react";
-// 引入 SwiperCore
 import SwiperCore from "swiper";
-// Import các module cần thiết. Pagination (nếu muốn) và A11y
 import { A11y, Pagination } from "swiper/modules";
 
-// Import Swiper styles
 import "swiper/css";
-// Thêm style cho Pagination
 import "swiper/css/pagination";
 
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
-// --- Interfaces (kept as is) ---
 interface Variant {
   id: number;
   sku: string;
@@ -44,14 +38,12 @@ interface ThumbnailItem {
   id: number;
 }
 
-// --- Helper Functions (kept as is) ---
 const buildImageUrl = (url: string): string => {
   return `${IMAGE_BASE_URL}${url}`;
 };
 
 const FeatureTabs = [{ label: "Nổi bật", icon: "⭐", isSelected: true }];
 
-// --- SimpleStarRating Component (kept as is) ---
 const SimpleStarRating: React.FC<Rating> = ({ average, total }) => {
   const avg = parseFloat(average);
   const totalReviews = parseInt(total);
@@ -68,14 +60,12 @@ const SimpleStarRating: React.FC<Rating> = ({ average, total }) => {
   );
 };
 
-// --- ProductImageGallery Component (Modified to use Swiper for main image) ---
 export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   productData,
   selectedVariantId,
 }) => {
   const { name, thumbnail, variants, rating } = productData;
 
-  // State để lưu instance của Swiper ảnh chính
   const [mainSwiper, setMainSwiper] = useState<SwiperCore | null>(null);
 
   const allThumbnails: ThumbnailItem[] = useMemo(() => {
@@ -91,35 +81,27 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       id: v.id,
     }));
 
-    // Start with primary image, then variants
     return [primaryImage, ...variantImages];
   }, [thumbnail, variants]);
 
-  // State để theo dõi index ảnh hiện tại
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const totalImages = allThumbnails.length;
 
   const selectedVariantIndex: number = useMemo(() => {
-    // Tìm index của variant đã chọn trong allThumbnails
     const index = allThumbnails.findIndex(
       (item) => item.id === selectedVariantId && item.isVariant,
     );
     return index !== -1 ? index : 0;
   }, [selectedVariantId, allThumbnails]);
 
-  // --- EFFECT: Đồng bộ khi biến thể (variant) thay đổi ---
   useEffect(() => {
-    // Nếu biến thể thay đổi, trượt Swiper đến vị trí mới
     if (mainSwiper && selectedVariantIndex !== currentImageIndex) {
       mainSwiper.slideTo(selectedVariantIndex);
-      // currentImageIndex sẽ được cập nhật bởi onSlideChange
     } else if (mainSwiper && selectedVariantIndex === 0) {
-      // Trường hợp biến thể bị hủy chọn, đảm bảo trượt về ảnh chính
       mainSwiper.slideTo(0);
     }
   }, [selectedVariantId, selectedVariantIndex, mainSwiper]);
 
-  // --- HANDLERS CHO ĐIỀU HƯỚNG BẰNG BUTTON ---
   const handleNext = (): void => {
     if (mainSwiper) {
       mainSwiper.slideNext();
@@ -132,15 +114,12 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     }
   };
 
-  // --- HANDLER CHO THUMBNAIL CLICK ---
   const handleThumbnailClick = (index: number): void => {
     if (mainSwiper) {
       mainSwiper.slideTo(index);
     }
   };
-  // --------------------------------------------------------
 
-  // Kết hợp FeatureTabs và allThumbnails cho Thumbnail Swiper
   const swiperContent = [
     ...FeatureTabs.map((tab) => ({ ...tab, isTab: true })),
     ...allThumbnails.map((item) => ({ ...item, isTab: false })),
@@ -153,14 +132,11 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         <SimpleStarRating average={rating.average} total={rating.total} />
       </div>
 
-      <div className="relative mb-4 aspect-[16/9] overflow-hidden rounded-lg bg-white">
+      <div className="relative mb-4 aspect-[16/9] overflow-hidden rounded-lg bg-white ">
         <Swiper
           onSwiper={setMainSwiper}
-          // 2. Cập nhật state khi trượt
           onSlideChange={(swiper) => setCurrentImageIndex(swiper.activeIndex)}
-          // 3. Thiết lập index ban đầu
           initialSlide={currentImageIndex}
-          // Thêm các module cần thiết
           modules={[A11y, Pagination]}
           speed={300} // Tốc độ trượt
           loop={true} // Lặp lại khi hết ảnh
@@ -170,7 +146,6 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
           }}
           className="h-full w-full"
         >
-          {/* Lặp qua allThumbnails để tạo slide cho ảnh chính */}
           {allThumbnails.map((item, index) => (
             <SwiperSlide key={`main-slide-${item.url}`}>
               <div className="flex h-full w-full items-center justify-center">
@@ -183,13 +158,11 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
             </SwiperSlide>
           ))}
 
-          {/* Hiển thị số trang tùy chỉnh (fraction) */}
           <div className="swiper-pagination-custom absolute bottom-3 left-4 z-10 px-2 text-xs font-bold text-black">
             {currentImageIndex + 1}/{totalImages}
           </div>
         </Swiper>
 
-        {/* Navigation Buttons cho Main Image (Sử dụng handlePrev/Next mới) */}
         <button
           onClick={handlePrev}
           className="group absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
