@@ -1,9 +1,5 @@
-// src/components/ProductDetail/ProductReviewList.tsx
 import React from "react";
-import { StarIcon, ClockIcon } from "@heroicons/react/20/solid"; // Sử dụng ClockIcon cho ngày tháng
-import { CheckBadgeIcon } from "@heroicons/react/24/outline"; // Dùng CheckBadgeIcon (outline)
-
-// Định nghĩa TypeScript (giữ nguyên)
+import { StarIcon, ClockIcon } from "@heroicons/react/20/solid";
 interface ReviewMedia {
   id: number;
   mediaType: string;
@@ -25,7 +21,6 @@ interface ReviewItem {
   rating: number;
   medias: ReviewMedia[];
   purchased: boolean;
-  // Giả định thêm thuộc tính cho các Tag/Badge (vì API hiện tại chưa có)
   attributes?: string[];
 }
 
@@ -48,9 +43,8 @@ const renderStars = (rating: number) => {
     stars.push(
       <StarIcon
         key={i}
-        className={`h-4 w-4 ${
-          i <= rating ? "text-yellow-400" : "text-gray-300"
-        } transition-colors`}
+        className={`h-4 w-4 ${i <= rating ? "text-yellow-400" : "text-gray-300"
+          } transition-colors`}
         aria-hidden="true"
       />,
     );
@@ -96,7 +90,6 @@ const formatTimeAgo = (dateString: string) => {
   }
 };
 
-// Hàm lấy chữ cái đầu
 const getInitials = (name: string) => {
   const parts = name.split(" ");
   if (parts.length > 1) {

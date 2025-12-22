@@ -7,15 +7,13 @@ import {
   LogOut,
   User,
   ChevronRight,
+  Key,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useCustomerProfileStore } from ".././../stores/useCustomerProfileStore";
 
-// Hàm trợ giúp để chuẩn hóa đường dẫn bằng cách loại bỏ dấu '/' ở cuối
 const normalizePath = (path: string) => {
-  // Loại bỏ các tham số query (sau dấu ?)
   const base = path.split("?")[0];
-  // Loại bỏ dấu '/' ở cuối nếu có, trừ khi đường dẫn chỉ là '/'
   return base.endsWith("/") && base.length > 1 ? base.slice(0, -1) : base;
 };
 
@@ -30,6 +28,11 @@ const primaryNavItems: NavItem[] = [
     icon: User,
     text: "Thông Tin Cá Nhân",
     href: "/tai-khoan/thong-tin-ca-nhan",
+  },
+  {
+    icon: Key,
+    text: "Đổi Mật Khẩu",
+    href: "/tai-khoan/doi-mat-khau",
   },
   {
     icon: Package,
@@ -51,8 +54,8 @@ const secondaryNavItems: NavItem[] = [
   },
   {
     icon: Shield,
-    text: "Thông tin bảo hành",
-    href: "/tai-khoan/thong-tin-bao-hanh",
+    text: "Chat với chúng tôi",
+    href: "/tai-khoan/chat-voi-chung-toi",
   },
 ];
 
@@ -61,11 +64,11 @@ const footerNavItems: NavItem[] = [
 ];
 
 interface MyAccountNavigationProps {
-  currentPath?: string; 
+  currentPath?: string;
 }
 
 const AccountNavigation: React.FC<MyAccountNavigationProps> = ({
-  currentPath, 
+  currentPath,
 }) => {
   const { user, loading, error, fetchProfile } = useCustomerProfileStore();
 
@@ -80,20 +83,16 @@ const AccountNavigation: React.FC<MyAccountNavigationProps> = ({
     if (typeof window !== "undefined") {
       return normalizePath(window.location.pathname);
     }
-    return normalizePath("/tai-khoan/thong-tin-ca-nhan"); 
+    return normalizePath("/tai-khoan/thong-tin-ca-nhan");
   }, [currentPath]);
 
 
   const renderNavSection = (items: NavItem[]) => (
-    // Giảm py-2 thành py-1
     <nav className="py-1">
       {items.map((item) => {
         const IconComponent = item.icon;
-        
         const normalizedItemHref = normalizePath(item.href);
         const isActive = normalizedItemHref === path;
-
-        // 🔑 SỬA ĐỔI: Giảm padding dọc (py-3 -> py-2.5) và padding ngang (px-4 -> px-3)
         const baseClasses =
           "flex items-center justify-between py-2.5 px-3 transition duration-200 ease-in-out border-l-4 border-transparent group rounded-r-md ";
         const hoverClasses = "hover:bg-red-50 hover:border-red-500";
@@ -101,10 +100,9 @@ const AccountNavigation: React.FC<MyAccountNavigationProps> = ({
           ? "border-red-600 bg-red-50 shadow-sm"
           : "";
 
-        // Giữ nguyên kích thước và màu sắc icon/text để đảm bảo khả năng đọc
         const iconClasses = isActive
-          ? "mr-3 h-5 w-5 text-red-600 transition" // Giảm mr-4 -> mr-3
-          : "mr-3 h-5 w-5 text-gray-600 group-hover:text-red-500 transition"; // Giảm mr-4 -> mr-3
+          ? "mr-3 h-5 w-5 text-red-600 transition"
+          : "mr-3 h-5 w-5 text-gray-600 group-hover:text-red-500 transition";
 
         const textClasses = isActive
           ? "text-sm font-semibold text-red-600"
@@ -116,7 +114,6 @@ const AccountNavigation: React.FC<MyAccountNavigationProps> = ({
             href={item.href}
             className={`w-full ${baseClasses} ${hoverClasses} ${activeClasses}`}
           >
-            {/* Giảm translate-x-2 -> translate-x-1 */}
             <div className="flex items-center transition duration-500 ease-in-out group-hover:translate-x-1">
               <IconComponent className={iconClasses} />
               <span className={textClasses}>{item.text}</span>
@@ -195,7 +192,7 @@ const AccountNavigation: React.FC<MyAccountNavigationProps> = ({
 
       <div className="space-y-1">
         {renderNavSection(primaryNavItems)}
-        <div className="my-2 border-t border-gray-200"></div> 
+        <div className="my-2 border-t border-gray-200"></div>
         {renderNavSection(secondaryNavItems)}
         <div className="my-2 border-t border-gray-200"></div>
         {renderNavSection(footerNavItems)}

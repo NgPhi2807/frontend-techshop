@@ -32,7 +32,7 @@ import Footer from "../components/Footer/Footer";
   </head>
   <body class="bg-gray-100 font-sans">
     <ToastProvider client:idle>
-      <MobileNav client:idle />
+      <MobileNav client:load />
       <AuthChecker client:load />
       <slot />
     </ToastProvider>

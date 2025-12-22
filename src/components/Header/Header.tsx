@@ -12,11 +12,11 @@ import {
     X,
     ChevronRight,
     LogOut,
-    Heart, 
-    ListChecks, 
-    User as UserIcon, 
-    DollarSign, 
-    Package, 
+    Heart,
+    ListChecks,
+    User as UserIcon,
+    DollarSign,
+    Package,
     Smartphone,
     Monitor,
     Watch,
@@ -25,10 +25,10 @@ import {
 import { useCartStore } from "../../stores/cartStore";
 import AuthModals from "../Auth/AuthModal";
 import { useAuthStore } from "../../stores/authStore";
-import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore"; 
-import {type LucideIcon } from 'lucide-react'; 
+import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore";
+import { type LucideIcon } from 'lucide-react';
 import HeaderTopBar from "./HeaderTopBar";
-import SidebarNav from "../SideBar/CategorySidebar"; 
+import SidebarNav from "../SideBar/CategorySidebar";
 type ModalType = "login" | "register" | null;
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
@@ -186,7 +186,7 @@ const HeaderMain: React.FC = () => {
         logout,
     } = useAuthStore();
 
-    const { user, loading } = useCustomerProfileStore(); 
+    const { user, loading } = useCustomerProfileStore();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [activeAuthModal, setActiveAuthModal] = useState<ModalType>(null);
@@ -196,16 +196,15 @@ const HeaderMain: React.FC = () => {
         ProductSuggestionItem[]
     >([]);
     const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
-    const [isSidebarNavOpen, setIsSidebarNavOpen] = useState(false); 
+    const [isSidebarNavOpen, setIsSidebarNavOpen] = useState(false);
 
-    // Đóng Sidebar Nav khi click vào backdrop (hoặc bên ngoài)
     const closeSidebarNav = () => setIsSidebarNavOpen(false);
 
-    const isLoggedIn = isAuthenticated; 
-    
+    const isLoggedIn = isAuthenticated;
+
     const userName = user?.name || "Bạn";
     const userPhone = user?.phone || "Chưa có SĐT";
-    
+
     const totalOrders = user?.totalOrders ?? 0;
     const totalAmountSpent = user?.totalAmountSpent ?? 0;
 
@@ -224,9 +223,9 @@ const HeaderMain: React.FC = () => {
     };
 
     const handleStoreLogout = () => {
-        logout(); 
-        setIsDropdownOpen(false); 
-        setIsMobileMenuOpen(false); 
+        logout();
+        setIsDropdownOpen(false);
+        setIsMobileMenuOpen(false);
     };
 
     const cartItems = useCartStore((state) => state.items);
@@ -288,21 +287,21 @@ const HeaderMain: React.FC = () => {
                 "search-suggestion-container",
             );
             const userMenuContainer = document.getElementById("user-menu-dropdown");
-         
+
             if (searchContainer && !searchContainer.contains(event.target as Node)) {
                 setIsSuggestionsVisible(false);
             }
             if (userMenuContainer && !userMenuContainer.contains(event.target as Node)) {
                 setIsDropdownOpen(false);
             }
-            
+
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isSidebarNavOpen]); 
+    }, [isSidebarNavOpen]);
 
     useEffect(() => {
         if (isSidebarNavOpen) {
@@ -326,7 +325,7 @@ const HeaderMain: React.FC = () => {
                 <User className="ml-2 h-5 w-5" />
             </button>
             {isDropdownOpen && (
-                <div 
+                <div
                     className="absolute right-0 top-full z-10 mt-2 w-64 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     role="menu"
                 >
@@ -334,7 +333,7 @@ const HeaderMain: React.FC = () => {
                         <p className="truncate">Xin chào, {userName}!</p>
                         <p className="text-xs font-normal text-gray-500 mt-0.5">SĐT: {userPhone}</p>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1 p-3 border-b border-gray-100">
                         <div className="flex items-center space-x-1">
                             <Package className="h-4 w-4 text-red-500 flex-shrink-0" />
@@ -368,7 +367,7 @@ const HeaderMain: React.FC = () => {
                     })}
 
                     <button
-                        onClick={handleStoreLogout} 
+                        onClick={handleStoreLogout}
                         className="flex w-full items-center border-t border-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:bg-red-50 hover:text-red-600"
                         role="menuitem"
                     >
@@ -426,7 +425,7 @@ const HeaderMain: React.FC = () => {
     return (
         <>
             <div className="bg-[linear-gradient(to_right,#e51d38_0%,#ec4352_100%)]  relative z-50"> {/* Đặt z-index cao cho header */}
-                        <HeaderTopBar />
+                <HeaderTopBar />
                 <div className="mx-auto max-w-screen-xl py-3">
                     <div className="flex h-12 items-center justify-between gap-4">
                         <a
@@ -445,9 +444,9 @@ const HeaderMain: React.FC = () => {
                                 className="h-full w-full object-contain"
                             />
                         </a>
-                        
+
                         <div className="relative hidden flex-shrink-0 md:block" id="sidebar-nav-container">
-                            <button 
+                            <button
                                 className="flex items-center rounded-lg bg-[#e45464] px-3 py-3 text-white transition hover:bg-red-400"
                                 onClick={toggleSidebarNav}
                                 id="sidebar-nav-button"
@@ -531,17 +530,15 @@ const HeaderMain: React.FC = () => {
                     </div>
                 </div>
                 <div
-                    className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 md:hidden ${
-                        isMobileMenuOpen
-                            ? "pointer-events-auto opacity-50"
-                            : "pointer-events-none opacity-0"
-                    }`}
+                    className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 md:hidden ${isMobileMenuOpen
+                        ? "pointer-events-auto opacity-50"
+                        : "pointer-events-none opacity-0"
+                        }`}
                     onClick={toggleMenu}
                 ></div>
                 <div
-                    className={`fixed left-0 top-0 z-50 h-full w-64 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
-                        isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
+                    className={`fixed left-0 top-0 z-50 h-full w-64 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+                        }`}
                 >
                     <div className="flex h-full flex-col">
                         <div className="flex items-center justify-between bg-red-600 p-3 text-white shadow-md">
@@ -553,9 +550,9 @@ const HeaderMain: React.FC = () => {
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
-                        
+
                         <div className="flex-1 overflow-y-auto pb-4">
-                            
+
                             <div className="flex flex-col border-b border-gray-100 p-4">
                                 {MobileAuthInfo}
                             </div>
@@ -575,7 +572,7 @@ const HeaderMain: React.FC = () => {
                                                             className="flex items-center justify-between p-3 text-gray-700 transition hover:bg-red-50 hover:text-red-600"
                                                         >
                                                             <span className="flex items-center font-medium text-sm">
-                                                                <IconComponent className="mr-3 h-4 w-4" /> 
+                                                                <IconComponent className="mr-3 h-4 w-4" />
                                                                 {item.name}
                                                             </span>
                                                             <ChevronRight className="h-4 w-4" />
@@ -592,11 +589,11 @@ const HeaderMain: React.FC = () => {
                                 <ul className="m-0 list-none p-0">
                                     <div className="px-3 py-2 text-base font-semibold text-gray-800">Danh mục</div>
                                     {mobileNavItems.map((item, index) => {
-                                        const IconComponent = item.icon || ChevronRight; 
+                                        const IconComponent = item.icon || ChevronRight;
                                         return (
                                             <li key={index}>
                                                 <a
-                                                    href={item.href} 
+                                                    href={item.href}
                                                     className="flex items-center text-sm justify-between p-3 text-gray-700 transition hover:bg-red-50 hover:text-red-600"
                                                 >
                                                     <span className="flex items-center font-medium">
@@ -611,11 +608,11 @@ const HeaderMain: React.FC = () => {
                                 </ul>
                             </nav>
                         </div>
-                        
+
                         {isLoggedIn && (
                             <div className="border-t border-gray-100 p-4 bg-white flex-shrink-0">
                                 <button
-                                    onClick={handleStoreLogout} 
+                                    onClick={handleStoreLogout}
                                     className="flex w-full"
                                 >
                                     <LogOut className="mr-2 h-4 w-4 text-gray-800" />
@@ -628,29 +625,29 @@ const HeaderMain: React.FC = () => {
             </div>
 
             {isSidebarNavOpen && (
-                <div 
+                <div
                     className="fixed inset-0 z-40 bg-black/55 md:block hidden "
                     onClick={closeSidebarNav}
                 >
-                    <div 
-                        className="w-full max-w-screen-xl mx-auto transition-all duration-500 ease-in-out px-2 2xl:px-0" 
-                        style={{marginTop: '136px'}} 
-                        onClick={(e) => e.stopPropagation()} 
+                    <div
+                        className="w-full max-w-screen-xl mx-auto transition-all duration-500 ease-in-out px-2 2xl:px-0"
+                        style={{ marginTop: '130px' }}
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <div 
+                        <div
                             className="flex flex-row w-full"
-                            id="pc-sidebar-nav-content" 
+                            id="pc-sidebar-nav-content"
                         >
                             <div className="w-[18%] flex-shrink-0 animate-fade-in-fast">
                                 <div className="relative w-full">
                                     <div className="shadow-xl flex flex-col overflow-x-hidden rounded-lg bg-white text-neutral-800 h-full">
-                                        <SidebarNav /> 
+                                        <SidebarNav />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="w-[65%]">
-                                
+
                             </div>
                             <div className="w-[17%]"></div>
                         </div>

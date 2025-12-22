@@ -1,8 +1,5 @@
 ---
-export const isr = {
-  expiration: 3600, // revalidate mỗi 1 giờ
-};
-
+export const prerender = false;
 import banner1 from "../assets/01K6F050R8WY7PZK75J36ST4CV.webp";
 import banner2 from "../assets/01K6F050ZM5Q7TATVRHDGHEMAV.webp";
 import BaseLayout from "../layouts/Layout.astro";
@@ -19,15 +16,15 @@ import { getHomePageData } from "../api/homeApi";
 const homeData = await getHomePageData();
 
 const {
- iphone,
- samsung,
- laptop,
- mobile_brand,
- laptop_brand,
- laptop_feature,
- mobile_feature,
- mobilebestseller,
- laptopbestseller,
+  iphone,
+  samsung,
+  laptop,
+  mobile_brand,
+  laptop_brand,
+  laptop_feature,
+  mobile_feature,
+  mobilebestseller,
+  laptopbestseller,
 } = homeData;
 
 const iphonedata = iphone?.data || [];
@@ -41,83 +38,101 @@ const mobile_bestseller = mobilebestseller?.data;
 const samsungdata = samsung?.data;
 
 const mobileVerticalBanners = [
-  { id: 1, src: banner1.src, alt: "Banner Điện thoại đặc biệt", href: "/danh-muc/dien-thoai" },
-  { id: 2, src: banner2.src, alt: "Banner Phụ kiện hot", href: "/danh-muc/phu-kien" },
+  {
+    id: 1,
+    src: banner1.src,
+    alt: "Banner Điện thoại đặc biệt",
+    href: "/danh-muc/dien-thoai",
+  },
+  {
+    id: 2,
+    src: banner2.src,
+    alt: "Banner Phụ kiện hot",
+    href: "/danh-muc/phu-kien",
+  },
 ];
 const laptopVerticalBanners = [
- { id: 3, src: banner1.src, alt: "Banner Điện thoại đặc biệt", href: "/danh-muc/dien-thoai" },
- { id: 4, src: banner2.src, alt: "Banner Phụ kiện hot", href: "/danh-muc/phu-kien" },
+  {
+    id: 3,
+    src: banner1.src,
+    alt: "Banner Điện thoại đặc biệt",
+    href: "/danh-muc/dien-thoai",
+  },
+  {
+    id: 4,
+    src: banner2.src,
+    alt: "Banner Phụ kiện hot",
+    href: "/danh-muc/phu-kien",
+  },
 ];
 
 const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính hãng`;
 ---
 
 <BaseLayout>
- <Fragment slot="head">
-  <title>{title}</title>
- </Fragment>
+  <Fragment slot="head">
+    <title>{title}</title>
+  </Fragment>
 
   <header>
-  <HeaderMain client:idle />
- </header>
+    <HeaderMain client:idle />
+  </header>
 
   <main class="pb-24">
-  <div class="flex flex-row w-full py-4 max-w-screen-xl mx-auto px-2 2xl:px-0">
-   <div class="w-[18%] hidden lg:block">
-    <SidebarNav
-     client:idle
-    />
-   </div>
+    <div
+      class="flex flex-row w-full py-4 max-w-screen-xl mx-auto px-2 2xl:px-0">
+      <div class="w-[18%] hidden lg:block">
+        <SidebarNav client:idle />
+      </div>
 
-   <div class="w-full lg:w-[65%]">
-    <HeroMainBanner client:idle />
-   </div>
+      <div class="w-full lg:w-[65%]">
+        <HeroMainBanner client:idle />
+      </div>
 
-   <div class="w-[17%] hidden lg:block">
-    <RightBanner client:idle />
-   </div>
-  </div>
-  <div
-   class="max-w-screen-xl flex flex-col gap-2 mx-auto px-2 md:px-4 2xl:px-0"
-  >
-      <div class="flex flex-row gap-2 items-stretch ">
-    <div class="w-full">
-     <FlashSale
-      datamobile={mobile_bestseller}
-      datalaptop={laptop_bestseller}
-      client:idle
-     />
+      <div class="w-[17%] hidden lg:block">
+        <RightBanner client:idle />
+      </div>
     </div>
-   </div>
-   <div class="flex flex-row gap-2 items-stretch py-4">
-    <div class="w-[18%] hidden lg:block">
-     <VerticalBannerStack data={mobileVerticalBanners} client:idle />
-    </div>
-    <div class="w-full lg:w-[82%]">
-     <MobileIphone
-      dataiphone={iphonedata}
-      datasamsung={samsungdata}
-      brands={mobilebrand}
-      feature={mobilefeature}
-      client:idle
-     />
-    </div>
-   </div>
+    <div
+      class="max-w-screen-xl flex flex-col gap-2 mx-auto px-2 md:px-4 2xl:px-0">
+      <div class="flex flex-row gap-2 items-stretch">
+        <div class="w-full">
+          <FlashSale
+            datamobile={mobile_bestseller}
+            datalaptop={laptop_bestseller}
+            client:idle
+          />
+        </div>
+      </div>
+      <div class="flex flex-row gap-2 items-stretch py-4">
+        <div class="w-[18%] hidden lg:block">
+          <VerticalBannerStack data={mobileVerticalBanners} client:idle />
+        </div>
+        <div class="w-full lg:w-[82%]">
+          <MobileIphone
+            dataiphone={iphonedata}
+            datasamsung={samsungdata}
+            brands={mobilebrand}
+            feature={mobilefeature}
+            client:idle
+          />
+        </div>
+      </div>
 
-   <div class="flex flex-row gap-2 items-stretch py-4">
-    <div class="w-[18%] hidden lg:block">
-     <VerticalBannerStack data={laptopVerticalBanners} client:idle />
+      <div class="flex flex-row gap-2 items-stretch py-4">
+        <div class="w-[18%] hidden lg:block">
+          <VerticalBannerStack data={laptopVerticalBanners} client:idle />
+        </div>
+        <div class="w-full lg:w-[82%]">
+          <Laptop
+            data={laptopdata}
+            brands={laptopbrand}
+            feature={laptopfeature}
+            client:idle
+          />
+        </div>
+      </div>
     </div>
-    <div class="w-full lg:w-[82%]">
-     <Laptop
-      data={laptopdata}
-      brands={laptopbrand}
-      feature={laptopfeature}
-      client:idle
-     />
-    </div>
-   </div>
-  </div>
- </main>
-<Footer /> 
+  </main>
+  <Footer />
 </BaseLayout>

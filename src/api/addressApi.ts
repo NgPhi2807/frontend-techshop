@@ -1,7 +1,7 @@
 
 const BASE_URL = import.meta.env.PUBLIC_API_BASE_URL;
 export interface AddressPayload {
-    id?: number; 
+    id?: number;
     line: string;
     ward: string;
     district: string;
@@ -11,7 +11,6 @@ export interface AddressPayload {
     phone?: string | null;
 }
 
-// Hàm POST (Thêm mới)
 export const postAddressApi = async (
     payload: AddressPayload,
     accessToken: string,
@@ -19,7 +18,7 @@ export const postAddressApi = async (
     if (!accessToken) {
         throw new Error("Lỗi xác thực: Không tìm thấy Access Token.");
     }
-    
+
     const response = await fetch(`${BASE_URL}/api/customer/my-address`, {
         method: "POST",
         headers: {
@@ -36,7 +35,7 @@ export const postAddressApi = async (
         const errorData = await response
             .json()
             .catch(() => ({ message: "Lỗi không xác định khi thêm địa chỉ." }));
-        
+
         throw new Error(
             errorData.message || `Lỗi ${response.status}: Không thể lưu địa chỉ.`,
         );
@@ -64,7 +63,7 @@ export const deleteAddressApi = async (
         const errorData = await response
             .json()
             .catch(() => ({ message: "Lỗi không xác định khi xóa." }));
-        
+
         throw new Error(
             errorData.message || `Lỗi ${response.status}: Không thể xóa địa chỉ.`,
         );
@@ -81,9 +80,9 @@ export const updateAddressApi = async (
     if (!payload.id) {
         throw new Error("Lỗi cập nhật: Cần có ID địa chỉ để cập nhật (PUT).");
     }
-    
+
     const response = await fetch(`${BASE_URL}/api/customer/my-address`, {
-        method: "PUT", 
+        method: "PUT",
         headers: {
             accept: "*/*",
             "Content-Type": "application/json",
@@ -98,7 +97,7 @@ export const updateAddressApi = async (
         const errorData = await response
             .json()
             .catch(() => ({ message: "Lỗi không xác định khi cập nhật." }));
-            
+
         throw new Error(
             errorData.message || `Lỗi ${response.status}: Không thể cập nhật địa chỉ.`,
         );

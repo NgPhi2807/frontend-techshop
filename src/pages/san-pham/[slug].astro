@@ -1,8 +1,4 @@
 ---
-export const isr = {
-  expiration: 3600, 
-};
-
 import BaseLayout from "../../layouts/Layout.astro";
 import HeaderMain from "../../components/Header/Header";
 import ProductDetailClient from "../../components/ProductDetail/ProductDetailClient";
@@ -12,12 +8,13 @@ import { fetchRelatedProducts } from "../../api/relatedProducts";
 import { fetchProductReviews } from "../../api/reviewApi";
 import ProductReview from "../../components/Review/ProductReviewList";
 import ProductRating from "../../components/Review/ProductRatingSummary";
+import Footer from "../../components/Footer/Footer";
+
 const { slug } = Astro.params;
+
 let productData: any = null;
-let error: string | null = null;
 let relatedProducts: any = null;
 let productReviews: any = null;
-let product: any = null;
 let productDetails: any = null;
 let productBreadcrumb: any = null;
 let productRating: any = null;
@@ -25,56 +22,53 @@ let productRating: any = null;
 try {
   const apiResponse = await getHomePageData(slug as string);
   const { product_detail } = apiResponse;
-  if (product_detail?.code === 1000 && product_detail.data) {
-    productData = product_detail.data;
-    ({
-      detail: productDetails,
-      breadcrumb: productBreadcrumb,
-      rating: productRating,
-    } = productData);
-    product = productData;
-    try {
-      if (productData.id) {
-        const reviewsResponse = await fetchProductReviews(productData.id);
-        if (reviewsResponse?.code === 1000 && reviewsResponse.data) {
-          productReviews = reviewsResponse.data;
-        }
-      }
-    } catch (e) {
-      console.error("❌ Error fetching reviews", e);
-    }
 
-    const breadcrumbItems = productBreadcrumb?.items;
-    if (breadcrumbItems?.length > 0) {
-      const lastSlug = breadcrumbItems[breadcrumbItems.length - 1]?.slug;
-      if (lastSlug) {
-        relatedProducts = await fetchRelatedProducts(lastSlug);
+  if (!product_detail || product_detail.code !== 1000 || !product_detail.data) {
+    return Astro.redirect("/404");
+  }
+
+  productData = product_detail.data;
+  productDetails = productData.detail;
+  productBreadcrumb = productData.breadcrumb;
+  productRating = productData.rating;
+
+  try {
+    if (productData.id) {
+      const reviewsResponse = await fetchProductReviews(productData.id);
+      if (reviewsResponse?.code === 1000) {
+        productReviews = reviewsResponse.data;
       }
     }
-  } else {
-    error =
-      product_detail?.error || "Lỗi không xác định khi tải dữ liệu sản phẩm.";
+  } catch (e) {
+    console.error("❌ Error fetching reviews", e);
+  }
+
+  const breadcrumbItems = productBreadcrumb?.items;
+  if (breadcrumbItems?.length > 0) {
+    const lastSlug = breadcrumbItems[breadcrumbItems.length - 1]?.slug;
+    if (lastSlug) {
+      relatedProducts = await fetchRelatedProducts(lastSlug);
+    }
   }
 } catch (e) {
-  error = (e as Error).message;
+  console.error("❌ API Error:", e);
+  return Astro.redirect("/404");
 }
 ---
 
-
 <BaseLayout>
   <Fragment slot="head">
-    <title>
-      {productData ? productData.name : "Chi tiết sản phẩm"}
-    </title>
+    <title>{productData?.name || "Chi tiết sản phẩm"}</title>
   </Fragment>
+
   <HeaderMain client:load />
+
   <main class="pb-24">
     {
       productBreadcrumb && (
         <nav
           class="mx-auto w-full max-w-screen-xl text-sm text-gray-500 2xl:px-0 px-2 py-4"
-          aria-label="Breadcrumb"
-        >
+          aria-label="Breadcrumb">
           <ol class="flex items-center space-x-2 gap-x-1 gap-y-2 flex-wrap lg:text-sm text-xs">
             <li class="inline-flex items-center">
               <a href="/" class="text-black transition font-medium">
@@ -93,12 +87,12 @@ try {
                   </li>
                   <li class="text-gray-400">/</li>
                 </>
-              )
+              ),
             )}
 
             <li class="inline-flex items-center">
               <span class="text-gray-500 font-medium">
-                {productBreadcrumb.current.name}
+                {productBreadcrumb.current?.name}
               </span>
             </li>
           </ol>
@@ -107,15 +101,15 @@ try {
     }
 
     <ProductDetailClient
-      product={product}
+      product={productData}
       productDetails={productDetails}
       client:idle
     />
+
     <div
-      class="bg-[#eaeaea] p-3 lg:p-4 mt-6 mx-2 max-w-screen-xl lg:mx-auto rounded-lg"
-    >
+      class="bg-[#eaeaea] p-3 lg:p-4 mt-6 mx-2 max-w-screen-xl lg:mx-auto rounded-lg">
       <h3 class="pb-4 text-base lg:text-xl font-semibold text-gray-900">
-        Đánh giá sản phẩm {productData.name}
+        Đánh giá sản phẩm {productData?.name}
       </h3>
       <ProductRating
         data={productRating}
@@ -128,4 +122,6 @@ try {
 
     <RelativeProduct data={relatedProducts} client:load />
   </main>
+
+  <Footer />
 </BaseLayout>

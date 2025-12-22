@@ -1,18 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
 
-// XÓA: import BackgroundImage from "../../assets/fs-bg-20-10-desk.webp";
-// import giftleft from "../../assets/fs-gift-box-2-20-10.webp"; // KHÔNG DÙNG
-// import giftright from "../../assets/fs-gift-box-20-10.webp"; // KHÔNG DÙNG
-// import header from "../../assets/hs-head-20-10.webp"; // KHÔNG DÙNG
-
 import "swiper/css/grid";
-import { Swiper, SwiperSlide, Swiper as SwiperCore } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
-
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 
 interface Product {
@@ -42,7 +37,7 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
   datamobile,
   datalaptop,
 }) => {
-  const [swiper, setSwiper] = useState<SwiperCore | null>(null);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
   const [activeTab, setActiveTab] = useState<"mobile" | "laptop">("mobile");
@@ -81,7 +76,6 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
 
   return (
     <div className="relative py-0 lg:py-6">
-      {/* Title Header */}
       <div className="relative z-30 mx-auto w-full lg:w-fit">
         <div className="relative z-10 flex items-center justify-center rounded-lg bg-gradient-to-r from-[#ff4e00] to-[#ff4e00] px-10 py-3 lg:rounded-b-none lg:rounded-t-2xl">
           <h2 className="whitespace-nowrap text-base font-black uppercase text-white drop-shadow-lg lg:text-3xl">
@@ -90,28 +84,25 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
         </div>
       </div>
 
-      {/* Outer div for the orange border (rounded-lg) */}
       <div className="rounded-lg border-0 border-[#ff4e00] lg:border-4">
         <div className="group relative h-auto px-0 lg:px-3">
           <div className="flex flex-row justify-center gap-2 pt-4 lg:justify-start">
             <button
               onClick={() => setActiveTab("mobile")}
-              className={`rounded-full px-6 py-1.5 text-xs font-bold lg:text-sm ${
-                activeTab === "mobile"
-                  ? "border-2 border-[#ff4e00] bg-white text-black shadow-md" // 🔑 ACTIVE: Viền cam đậm, nền trắng, chữ đen
-                  : "border-2 border-gray-300 bg-white text-gray-800 transition-all duration-200 hover:scale-105 hover:border-[#ff4e00]" // INACTIVE: Viền xám, nền trắng
-              }`}
+              className={`rounded-full px-6 py-1.5 text-xs font-bold lg:text-sm ${activeTab === "mobile"
+                ? "border-2 border-[#ff4e00] bg-white text-black shadow-md" // 🔑 ACTIVE: Viền cam đậm, nền trắng, chữ đen
+                : "border-2 border-gray-300 bg-white text-gray-800 transition-all duration-200 hover:scale-105 hover:border-[#ff4e00]" // INACTIVE: Viền xám, nền trắng
+                }`}
             >
               Điện Thoại HOT
             </button>
 
             <button
               onClick={() => setActiveTab("laptop")}
-              className={`rounded-full px-6 py-1.5 text-xs font-bold lg:text-sm ${
-                activeTab === "laptop"
-                  ? "border-2 border-[#ff4e00] bg-white text-black shadow-md" // 🔑 ACTIVE: Viền cam đậm, nền trắng, chữ đen
-                  : "border-2 border-gray-300 bg-white text-gray-800 transition-all duration-200 hover:scale-105 hover:border-[#ff4e00]" // INACTIVE: Viền xám, nền trắng
-              }`}
+              className={`rounded-full px-6 py-1.5 text-xs font-bold lg:text-sm ${activeTab === "laptop"
+                ? "border-2 border-[#ff4e00] bg-white text-black shadow-md"
+                : "border-2 border-gray-300 bg-white text-gray-800 transition-all duration-200 hover:scale-105 hover:border-[#ff4e00]"
+                }`}
             >
               Laptop Cấu Hình Mạnh
             </button>
@@ -147,13 +138,12 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
                 const discountPercent =
                   originalPrice > 0 && currentPrice < originalPrice
                     ? Math.round(
-                        ((originalPrice - currentPrice) / originalPrice) * 100,
-                      )
+                      ((originalPrice - currentPrice) / originalPrice) * 100,
+                    )
                     : 0;
 
                 const hasDiscount = discountPercent > 0;
                 const ratingValue = product.rating?.average || 0;
-                // Xử lý promoText theo cấu trúc interface (object hoặc null)
                 const promoText =
                   product.promotions?.description ||
                   "Không phí chuyển đổi khi trả góp 0%...";
@@ -210,7 +200,7 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
                         </p>
                       </div>
 
-                      <div className="mt-6 flex items-center justify-between border-t border-gray-100 p-3 text-xs">
+                      <div className="mt-6 flex items-center justify-between border-t border-gray-100 py-3 text-xs">
                         <div className="flex items-center font-bold text-yellow-500">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -250,16 +240,14 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
             </Swiper>
           )}
 
-          {/* Nút điều hướng (Chỉ hiển thị nếu có dữ liệu để cuộn) */}
           {displayedData.length > 0 && (
             <>
               <button
                 onClick={handlePrev}
-                className={`absolute left-0 top-[50%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-                  isBeginning
-                    ? "pointer-events-none opacity-0"
-                    : "opacity-0 group-hover:opacity-100"
-                }`}
+                className={`absolute left-0 top-[50%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${isBeginning
+                  ? "pointer-events-none opacity-0"
+                  : "opacity-0 group-hover:opacity-100"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -279,11 +267,10 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
 
               <button
                 onClick={handleNext}
-                className={`absolute right-0 top-[50%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-                  isEnd
-                    ? "pointer-events-none opacity-0"
-                    : "opacity-0 group-hover:opacity-100"
-                }`}
+                className={`absolute right-0 top-[50%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${isEnd
+                  ? "pointer-events-none opacity-0"
+                  : "opacity-0 group-hover:opacity-100"
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

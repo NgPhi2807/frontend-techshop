@@ -1,8 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import HeaderTopBar from "../../../components/Header/HeaderTopBar";
 import HeaderMain from "../../../components/Header/Header";
-import UserAccountLayout from "../../../components/UserPage/UserPageLayout"; 
+import UserAccountLayout from "../../../components/UserPage/UserPageLayout";
 import MyOrders from "../../../components/UserPage/MyOrders";
 const pageTitle = `Đơn hàng của tôi`;
 const breadcrumbTitle = `Đơn hàng của tôi`;
@@ -13,13 +12,12 @@ const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chí
   <Fragment slot="head">
     <title>{pageTitle} | {siteTitle}</title>
   </Fragment>
-  
-  <HeaderMain client:load />
+
+  <HeaderMain client:only />
 
   <main>
-    <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:load>
-    
-      <MyOrders client:load />
+    <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:only>
+      <MyOrders client:only />
     </UserAccountLayout>
   </main>
 </Layout>

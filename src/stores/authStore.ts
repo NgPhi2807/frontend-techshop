@@ -1,10 +1,9 @@
-// src/stores/authStore.ts
 import { create } from "zustand";
 import Cookies from "js-cookie";
 
-import { loginApi, registerApi, refreshTokenApi, resetPasswordApi } from "../api/authApi"; 
-const REFRESH_TIMEOUT = 29 * 60 * 1000; // 29 minutes
-const COOKIE_EXPIRY_DAYS = 7; 
+import { loginApi, registerApi, refreshTokenApi, resetPasswordApi } from "../api/authApi";
+const REFRESH_TIMEOUT = 29 * 60 * 1000;
+const COOKIE_EXPIRY_DAYS = 7;
 
 const COOKIE_OPTIONS = {
     secure: false,
@@ -29,14 +28,14 @@ interface AuthState {
     forgotPasswordLoading: boolean;
     forgotPasswordError: string | null;
     refreshTimerId: NodeJS.Timeout | number | null;
-    login: (identifier: string, password: string) => Promise<boolean>; // Chấp nhận identifier (SĐT/Email)
+    login: (identifier: string, password: string) => Promise<boolean>;
     register: (payload: RegisterPayload) => Promise<boolean>;
     logout: () => void;
     clearLoginError: () => void;
     clearRegisterError: () => void;
-    forgotPassword: (email: string) => Promise<boolean>; 
+    forgotPassword: (email: string) => Promise<boolean>;
     checkAuthStatus: () => Promise<void>;
-    _refreshToken: (isScheduled?: boolean) => Promise<boolean>; // Thêm _refreshToken vào interface
+    _refreshToken: (isScheduled?: boolean) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => {
@@ -68,14 +67,14 @@ export const useAuthStore = create<AuthState>((set, get) => {
     const _scheduleTokenRefresh = (timeout: number) => {
         _stopTokenRefresh();
         const id = setTimeout(async () => {
-            await get()._refreshToken(true); 
+            await get()._refreshToken(true);
         }, timeout);
 
         set({ refreshTimerId: id });
     };
-    
+
     const _refreshToken = async (isScheduled = false): Promise<boolean> => {
-        const currentRefreshToken = Cookies.get("refreshToken"); 
+        const currentRefreshToken = Cookies.get("refreshToken");
         const existingAccessToken = Cookies.get("accessToken");
 
         if (!currentRefreshToken) {
@@ -91,7 +90,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
         try {
             const result = await refreshTokenApi(currentRefreshToken);
-            
+
             if (result.code === 1000 && result.data?.accessToken) {
                 _setAuthTokens(result.data.accessToken, result.data.refreshToken);
                 set({ isAuthenticated: true });
@@ -100,7 +99,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
             } else {
                 _stopTokenRefresh();
                 _removeAuthTokens();
-                set({ isAuthenticated: false }); 
+                set({ isAuthenticated: false });
                 return false;
             }
         } catch (err) {
@@ -118,10 +117,10 @@ export const useAuthStore = create<AuthState>((set, get) => {
         registerLoading: false,
         registerError: null,
         forgotPasswordLoading: false,
-        forgotPasswordError: null, 
+        forgotPasswordError: null,
         refreshTimerId: null,
 
-        _refreshToken, 
+        _refreshToken,
 
         clearLoginError: () => set({ loginError: null }),
         clearRegisterError: () => set({ registerError: null }),
@@ -129,10 +128,10 @@ export const useAuthStore = create<AuthState>((set, get) => {
         checkAuthStatus: async () => {
             if (typeof window === "undefined") return;
             await new Promise((r) => setTimeout(r, 100));
-            const refreshTokenInCookie = Cookies.get("refreshToken"); 
+            const refreshTokenInCookie = Cookies.get("refreshToken");
             const accessToken = Cookies.get("accessToken");
             if (refreshTokenInCookie) {
-                await get()._refreshToken(false); 
+                await get()._refreshToken(false);
             } else if (accessToken) {
                 set({ isAuthenticated: true });
             } else {
@@ -192,7 +191,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         forgotPassword: async (email: string) => {
             set({ forgotPasswordLoading: true, forgotPasswordError: null });
             try {
-                const result = await resetPasswordApi(email); 
+                const result = await resetPasswordApi(email);
 
                 if (result.code === 1000) {
                     set({ forgotPasswordLoading: false });
@@ -215,9 +214,9 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
         logout: () => {
             _stopTokenRefresh();
-            _removeAuthTokens(); 
+            _removeAuthTokens();
             set({ isAuthenticated: false, loginLoading: false, registerLoading: false });
-            
+
             if (typeof window !== "undefined") {
                 window.location.replace("/");
             }

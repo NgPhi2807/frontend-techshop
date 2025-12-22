@@ -51,13 +51,12 @@ const FavoriteButton: React.FC<FavoriteButtonProps> = ({
   return (
     <div
       onClick={handleToggleFavorite}
-      className={`mt-0 flex cursor-pointer items-center transition-colors duration-150 ${
-        loading
+      className={`mt-0 flex cursor-pointer items-center transition-colors duration-150 ${loading
           ? "cursor-wait text-gray-400"
           : isFavorite
             ? "text-red-500 hover:text-red-600"
             : "text-gray-500 hover:text-red-500"
-      }`}
+        }`}
       style={{ pointerEvents: loading ? "none" : "auto" }}
     >
       <svg

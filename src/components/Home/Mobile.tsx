@@ -1,17 +1,20 @@
 import React, { useState, useMemo } from "react";
-
 import "swiper/css/grid";
-import { Swiper, SwiperSlide, Swiper as SwiperCore } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
-import BrandCategory from "../ListCategory/BrandCategory"; // Cần điều chỉnh lại path
-import FeatureCategory from "../ListCategory/FeatureCategory"; // Cần điều chỉnh lại path
+
+import BrandCategory from "../ListCategory/BrandCategory";
+import FeatureCategory from "../ListCategory/FeatureCategory";
+// 1. Import FavoriteButton tương tự Laptop
+import FavoriteButton from "../FavoriteButton/FavoriteButton";
+
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 
-// --- Interfaces (Giữ nguyên) ---
 interface Feature {
   id: number;
   name: string;
@@ -42,31 +45,27 @@ interface Product {
   } | null;
 }
 
-// Thay đổi FlashSaleSwiperProps thành MobileCategorySwiperProps
-interface MobileCategorySwiperProps {
-  dataiphone: Product[]; // Dữ liệu cho iPhone
-  datasamsung: Product[]; // Dữ liệu cho Samsung
+interface MobileProps {
+  dataiphone: Product[];
+  datasamsung: Product[];
   brands: Brand[];
   feature: Feature[];
 }
 
-// Thêm type cho category
 type Category = "iphone" | "samsung";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("vi-VN").format(price);
 
-// Đổi tên component
-const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
+const Mobile: React.FC<MobileProps> = ({
   dataiphone,
   datasamsung,
   brands,
   feature,
 }) => {
-  const [swiper, setSwiper] = useState<SwiperCore | null>(null);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
-  // Thêm state để quản lý category đang chọn, mặc định là 'iphone'
   const [selectedCategory, setSelectedCategory] = useState<Category>("iphone");
 
   const handlePrev = () => {
@@ -76,7 +75,6 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
     swiper?.slideNext();
   };
 
-  // 1. Lấy dữ liệu và tiêu đề dựa trên category đang chọn
   const { currentData, title } = useMemo(() => {
     if (selectedCategory === "iphone") {
       return {
@@ -84,7 +82,6 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
         title: "iPhone Nổi Bật",
       };
     } else {
-      // selectedCategory === 'samsung'
       return {
         currentData: datasamsung,
         title: "Samsung Nổi Bật",
@@ -92,7 +89,6 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
     }
   }, [selectedCategory, dataiphone, datasamsung]);
 
-  // Kiểm tra dữ liệu chung
   if (!currentData || currentData.length === 0) {
     return (
       <div className="p-4 text-center text-gray-500">
@@ -101,50 +97,36 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
     );
   }
 
-  const visibleBrands = brands;
-  const visibleFeature = feature;
-
-  // Class cho tab đang active
-  const activeTabClass = "";
-  const inactiveTabClass = "";
-
   return (
     <div className="group relative">
-      {/* --- Category Selector (Thêm vào đây) --- */}
-      {/* Category Selector (Đã sửa) */}
       <div className="flex justify-center gap-2">
         <div className="relative flex h-auto w-full items-center justify-center gap-2 rounded-t-lg border-b-[2px] border-red-600 shadow">
           <div className="flex w-full">
             <button
               onClick={() => setSelectedCategory("iphone")}
-              className={`w-1/2 rounded-t-lg px-4 py-3 text-center text-sm font-semibold uppercase lg:text-xl ${
-                selectedCategory === "iphone"
-                  ? "border-r border-red-200 bg-gradient-to-t from-red-50 to-gray-200 text-red-600"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              }`}
+              className={`w-1/2 rounded-t-lg px-4 py-3 text-center text-sm font-semibold uppercase lg:text-xl ${selectedCategory === "iphone"
+                ? "border-r border-red-200 bg-gradient-to-t from-red-50 to-gray-200 text-red-600"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
             >
               iPhone Nổi Bật
             </button>
             <button
               onClick={() => setSelectedCategory("samsung")}
-              className={`w-1/2 rounded-t-lg px-4 py-2 text-center text-sm font-semibold uppercase transition duration-200 lg:text-xl ${
-                selectedCategory === "samsung"
-                  ? "border-l border-red-200 bg-gradient-to-t from-red-50 to-gray-200 text-red-600"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              }`}
+              className={`w-1/2 rounded-t-lg px-4 py-2 text-center text-sm font-semibold uppercase transition duration-200 lg:text-xl ${selectedCategory === "samsung"
+                ? "border-l border-red-200 bg-gradient-to-t from-red-50 to-gray-200 text-red-600"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                }`}
             >
               Samsung Nổi Bật
             </button>
           </div>
         </div>
       </div>
-      {/* -------------------------------------- */}
 
       <FeatureCategory feature={feature} />
+      <BrandCategory brands={brands} />
 
-     <BrandCategory brands={brands} />
-
-      {/* Swiper Section (Sử dụng currentData) */}
       <Swiper
         modules={[Grid]}
         spaceBetween={14}
@@ -155,7 +137,6 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
           setIsBeginning(s.isBeginning);
           setIsEnd(s.isEnd);
         }}
-        // Reset Swiper on category change (key change forces re-render)
         key={selectedCategory}
         breakpoints={{
           640: { slidesPerView: 3, grid: { rows: 2, fill: "row" } },
@@ -169,16 +150,16 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
 
           const discountPercent =
             originalPrice > 0 && currentPrice < originalPrice
-              ? Math.round(
-                  ((originalPrice - currentPrice) / originalPrice) * 100,
-                )
+              ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
               : 0;
 
           const hasDiscount = discountPercent > 0;
           const ratingValue = product.rating?.average || 0;
           const promoText =
-            product.promotion?.description ||
-            "Không phí chuyển đổi khi trả góp 0%...";
+            product.promotion?.description || "Không phí chuyển đổi khi trả góp 0%...";
+
+          // 2. Trạng thái yêu thích ban đầu (thường lấy từ user profile hoặc mặc định false)
+          const initialIsFavorite = false;
 
           return (
             <SwiperSlide key={product.id}>
@@ -202,7 +183,6 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
                         alt="Discount Badge"
                         className="h-full w-full object-contain"
                       />
-
                       <span className="absolute inset-0 flex items-center justify-center text-center text-[10px] font-bold leading-tight text-white">
                         Giảm {discountPercent}%
                       </span>
@@ -214,19 +194,17 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
                   {product.name}
                 </p>
 
-                <div className="">
+                <div>
                   <div className="flex flex-row gap-2">
                     <p className="text-xs font-bold text-red-600 lg:text-sm">
                       {formatPrice(currentPrice)}₫
                     </p>
-
                     {hasDiscount && (
                       <p className="text-[10px] text-gray-500 line-through lg:text-xs">
                         {formatPrice(originalPrice)}₫
                       </p>
                     )}
                   </div>
-
                   <p className="mb-6 mt-2 line-clamp-2 h-auto rounded bg-gray-200 p-1 text-[10px] font-semibold text-black lg:mb-10 lg:text-xs">
                     {promoText}
                   </p>
@@ -246,79 +224,39 @@ const CategoryProductSwiper: React.FC<MobileCategorySwiperProps> = ({
                     </span>
                   </div>
 
-                  <div className="mt-0 flex cursor-pointer items-center text-gray-500 hover:text-red-500">
-                    {/* Heart Icon SVG */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-0.5 h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                    Yêu thích
-                  </div>
+                  {/* 3. Thay thế nút yêu thích cũ bằng FavoriteButton component */}
+                  <FavoriteButton
+                    productId={product.id}
+                    initialIsFavorite={initialIsFavorite}
+                  />
                 </div>
               </a>
             </SwiperSlide>
           );
         })}
       </Swiper>
-      {/* Navigation buttons (Giữ nguyên) */}
+
+      {/* Nút điều hướng Swiper */}
       <button
         onClick={handlePrev}
-        className={`absolute left-0 top-[58%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-          isBeginning
-            ? "pointer-events-none opacity-0"
-            : "opacity-0 group-hover:opacity-100"
-        }`}
+        className={`absolute left-0 top-[58%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${isBeginning ? "pointer-events-none opacity-0" : "opacity-0 group-hover:opacity-100"
+          }`}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          stroke="currentColor"
-          className="mr-2 h-7 w-7"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15.75 19.5L8.25 12l7.5-7.5"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="mr-2 h-7 w-7">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </button>
       <button
         onClick={handleNext}
-        className={`absolute right-0 top-[58%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-          isEnd
-            ? "pointer-events-none opacity-0"
-            : "opacity-0 group-hover:opacity-100"
-        }`}
+        className={`absolute right-0 top-[58%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${isEnd ? "pointer-events-none opacity-0" : "opacity-0 group-hover:opacity-100"
+          }`}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          stroke="currentColor"
-          className="ml-2 h-7 w-7"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M8.25 4.5l7.5 7.5-7.5 7.5"
-          />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="ml-2 h-7 w-7">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
     </div>
   );
 };
 
-export default CategoryProductSwiper;
+export default Mobile;

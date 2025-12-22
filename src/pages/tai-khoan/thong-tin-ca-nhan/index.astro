@@ -1,12 +1,9 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import HeaderTopBar from "../../../components/Header/HeaderTopBar";
 import HeaderMain from "../../../components/Header/Header";
-// Import component React/TypeScript mới
-import UserAccountLayout from "../../../components/UserPage/UserPageLayout"; 
+import UserAccountLayout from "../../../components/UserPage/UserPageLayout";
 import Profile from "../../../components/UserPage/Profile.tsx"; // Nội dung 75%
 
-// Định nghĩa dữ liệu trang
 const pageTitle = `Thông tin cá nhân`;
 const breadcrumbTitle = `Thông tin cá nhân`;
 const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
@@ -16,13 +13,11 @@ const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chí
   <Fragment slot="head">
     <title>{pageTitle} | {siteTitle}</title>
   </Fragment>
-  
+
   <HeaderMain client:load />
 
-  {/* Dùng component React để wrap toàn bộ nội dung chính */}
   <main>
     <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:load>
-    
       <Profile client:load />
     </UserAccountLayout>
   </main>

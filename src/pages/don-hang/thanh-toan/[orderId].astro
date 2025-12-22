@@ -8,16 +8,18 @@ import HeaderMain from "../../../components/Header/Header";
 if (!orderId) {
   return Astro.redirect("/404");
 }
-
+const pageTitle = `Đơn hàng ${orderId}`;
+const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
 const orderIdProp = orderId;
 ---
 
 <Layout>
-  <Fragment slot="head"> </Fragment>
+  <Fragment slot="head">
+    <title>{pageTitle} | {siteTitle}</title>
+  </Fragment>
   <HeaderMain client:load />
   <main
-    class="w-full py-4 max-w-screen-xl mx-auto lg:px-2 px-2 2xl:px-0 relative"
-  >
+    class="w-full py-4 max-w-screen-xl mx-auto lg:px-2 px-2 2xl:px-0 relative">
     <div>
       <OrderRouterWrapper orderId={orderIdProp} client:only="react" />
     </div>

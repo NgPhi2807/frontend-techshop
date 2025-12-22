@@ -17,10 +17,10 @@ interface PaymentInfo {
 
 export interface OrderResponseData {
     orderId: number;
-    grossAmount: number;    // Tổng tiền hàng
-    directDiscount: number;  // Chiết khấu trực tiếp
-    voucherDiscount: number; // Chiết khấu voucher
-    totalAmount: number;     // Tổng tiền cuối cùng cần thanh toán
+    grossAmount: number;
+    directDiscount: number;
+    voucherDiscount: number;
+    totalAmount: number;
     message: string;
     paymentInfo: PaymentInfo & {
         _calculatedExpireTime?: number;
@@ -52,7 +52,7 @@ const timeToSeconds = (timeStr: string): number => {
 export interface CartItem {
     variantId: number;
     sku: string;
-    name: string; // ✅ Đã có trường name để lưu tên sản phẩm
+    name: string;
     price: number;
     basePrice: number;
     color: string;
@@ -78,7 +78,7 @@ interface CartState {
     fetchServerCart: () => Promise<void>;
     addItem: (
         variant: AddVariant,
-        productName: string, // ✅ Nhận productName từ component
+        productName: string,
         quantity?: number
     ) => Promise<void>;
     updateItemQuantity: (variantId: number, quantity: number) => Promise<void>;
@@ -108,8 +108,7 @@ export const useCartStore = create<CartState>()(
                 if (!token) return;
                 const serverItems = await fetchMyCart(token);
                 if (serverItems) {
-                    // Cần đảm bảo server trả về trường 'name' để không mất dữ liệu
-                    set({ items: serverItems as CartItem[] }); 
+                    set({ items: serverItems as CartItem[] });
                     console.log("✅ Giỏ hàng đã đồng bộ từ server:", serverItems);
                 } else {
                     console.error("❌ Lỗi lấy giỏ hàng server: Không nhận được dữ liệu.");

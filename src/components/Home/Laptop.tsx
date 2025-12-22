@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
 import "swiper/css/grid";
-import { Swiper, SwiperSlide, Swiper as SwiperCore } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -9,7 +10,6 @@ import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
 import BrandCategory from "../ListCategory/BrandCategory"; // Cần điều chỉnh lại path
 import FeatureCategory from "../ListCategory/FeatureCategory"; // Cần điều chỉnh lại path
-// ------------------------------------
 import FavoriteButton from "../FavoriteButton/FavoriteButton";
 
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
@@ -44,7 +44,7 @@ interface Product {
   } | null;
 }
 
-interface FlashSaleSwiperProps {
+interface LaptopProps {
   data: Product[];
   feature: Feature[];
   brands: Brand[];
@@ -53,12 +53,12 @@ interface FlashSaleSwiperProps {
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("vi-VN").format(price);
 
-const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
+const Laptop: React.FC<LaptopProps> = ({
   data,
   brands,
   feature,
 }) => {
-  const [swiper, setSwiper] = useState<SwiperCore | null>(null);
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
@@ -86,9 +86,9 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
           </span>
         </div>
       </div>
-     <FeatureCategory feature={feature} />
+      <FeatureCategory feature={feature} />
 
-     <BrandCategory brands={brands} />
+      <BrandCategory brands={brands} />
       <Swiper
         modules={[Grid]}
         spaceBetween={14}
@@ -112,8 +112,8 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
           const discountPercent =
             originalPrice > 0 && currentPrice < originalPrice
               ? Math.round(
-                  ((originalPrice - currentPrice) / originalPrice) * 100,
-                )
+                ((originalPrice - currentPrice) / originalPrice) * 100,
+              )
               : 0;
 
           const hasDiscount = discountPercent > 0;
@@ -202,11 +202,10 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
       </Swiper>
       <button
         onClick={handlePrev}
-        className={`absolute left-0 top-[58%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-          isBeginning
-            ? "pointer-events-none opacity-0"
-            : "opacity-0 group-hover:opacity-100"
-        }`}
+        className={`absolute left-0 top-[58%] z-20 hidden transform rounded-r-full bg-black/50 py-3 text-white transition duration-300 md:block ${isBeginning
+          ? "pointer-events-none opacity-0"
+          : "opacity-0 group-hover:opacity-100"
+          }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -225,11 +224,10 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
       </button>
       <button
         onClick={handleNext}
-        className={`absolute right-0 top-[58%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${
-          isEnd
-            ? "pointer-events-none opacity-0"
-            : "opacity-0 group-hover:opacity-100"
-        }`}
+        className={`absolute right-0 top-[58%] z-20 hidden transform rounded-l-full bg-black/50 py-3 text-white transition duration-300 md:block ${isEnd
+          ? "pointer-events-none opacity-0"
+          : "opacity-0 group-hover:opacity-100"
+          }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -250,4 +248,4 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
   );
 };
 
-export default FlashSaleSwiper;
+export default Laptop;

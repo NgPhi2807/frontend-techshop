@@ -2,9 +2,9 @@
 import Layout from "../../../layouts/Layout.astro";
 import HeaderMain from "../../../components/Header/Header";
 import UserAccountLayout from "../../../components/UserPage/UserPageLayout";
-import FavoriteProducts from "../../../components/UserPage/FavoriteProducts";
-const pageTitle = `Thông tin cá nhân`;
-const breadcrumbTitle = `Thông tin cá nhân`;
+import ChangePasswordForm from "../../../components/UserPage/ChangPass";
+const pageTitle = `Đơn hàng của tôi`;
+const breadcrumbTitle = `Đơn hàng của tôi`;
 const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
 ---
 
@@ -17,7 +17,7 @@ const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chí
 
   <main>
     <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:only>
-      <FavoriteProducts client:only />
+      <ChangePasswordForm client:only />
     </UserAccountLayout>
   </main>
 </Layout>

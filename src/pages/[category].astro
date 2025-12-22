@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import HeaderMain from "../components/Header/Header";
 import ProductList from "../components/ProductLists/ProductList";
 import BaseLayout from "../layouts/Layout.astro";
@@ -9,30 +11,38 @@ import { fetchBreadcrumb } from "../api/breadcrumbApi";
 import { fetchBrandCategory } from "../api/categoryApi";
 import { fetchFeatureCategory } from "../api/categoryApi";
 import Footer from "../components/Footer/Footer";
-
 const { category } = Astro.params;
 const categorySlug = `${category}`;
-const filter = await fetchFilter(category ?? "");
+
 const breadcrumbData = await fetchBreadcrumb(categorySlug ?? "");
-const breadcrumb = breadcrumbData?.data?.breadcrumb; 
+
+if (
+  !breadcrumbData ||
+  !breadcrumbData.data ||
+  !breadcrumbData.data.breadcrumb
+) {
+  return Astro.redirect("/404");
+}
+
+const breadcrumb = breadcrumbData?.data?.breadcrumb;
+const filter = await fetchFilter(category ?? "");
 const brandCategory = await fetchBrandCategory(categorySlug ?? "");
 const featureCategory = await fetchFeatureCategory(categorySlug ?? "");
 const features = featureCategory?.data?.children || [];
 const brands = brandCategory?.data?.children || [];
-const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính hãng`;
-
+const title = `MTSMART - ${breadcrumb?.current?.name || "Cửa hàng điện thoại, laptop"}`;
 ---
 
 <BaseLayout>
   <Fragment slot="head">
-  <title>{title}</title>
- </Fragment>
+    <title>{title}</title>
+  </Fragment>
   <HeaderMain client:idle />
+
   <div class="max-w-screen-xl mx-auto py-8 px-2 2xl:px-0">
     <nav
       class="mx-auto w-full max-w-screen-xl text-sm text-gray-500"
-      aria-label="Breadcrumb"
-    >
+      aria-label="Breadcrumb">
       <ol class="flex items-center space-x-2">
         <li>
           <a href="/" class="text-blue-600 transition font-medium">
@@ -47,8 +57,7 @@ const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính 
               <li>
                 <a
                   href={`/${item.slug}`}
-                  class="text-blue-600 transition font-medium"
-                >
+                  class="text-blue-600 transition font-medium">
                   {item.name}
                 </a>
               </li>
@@ -66,11 +75,11 @@ const title = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ , chính 
         }
       </ol>
     </nav>
-        <BrandCategory brands={brands} />
 
-     <FeatureCategory feature={features} />
-
+    <BrandCategory brands={brands} />
+    <FeatureCategory feature={features} />
     <ProductList categorySlug={categorySlug} filter={filter} client:idle />
   </div>
-  <Footer>
+
+  <Footer />
 </BaseLayout>
