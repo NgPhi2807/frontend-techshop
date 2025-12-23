@@ -5,7 +5,6 @@ import { formatCurrency } from "../../utils/currency";
 import { useCartStore } from "../../stores/cartStore";
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
 
-// CẬP NHẬT INTERFACE ITEM: Thêm availableStock
 interface Item {
   variantId: number;
   sku: string;

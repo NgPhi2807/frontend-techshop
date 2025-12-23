@@ -25,7 +25,7 @@ export default defineConfig({
       svg: true,
       img: true,
     }),
-    prefetch(), 
+    prefetch(),
   ],
 
   vite: {
@@ -39,7 +39,7 @@ export default defineConfig({
   },
 
   server: {
-    port: 4555,
+    port: 5500,
     host: true,
   },
 

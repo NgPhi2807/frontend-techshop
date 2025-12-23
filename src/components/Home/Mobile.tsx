@@ -29,7 +29,14 @@ interface Brand {
   categoryType: string;
   logo: string | null;
 }
-
+interface Promotion {
+  id: number;
+  name: string;
+  description: string;
+  discountType: string;
+  discountValue: number;
+  active: boolean;
+}
 interface Product {
   id: number;
   name: string;
@@ -38,11 +45,7 @@ interface Product {
   price: number;
   special_price: number;
   rating: { average: number };
-  promotion: {
-    id: number;
-    name: string;
-    description: string;
-  } | null;
+  promotions: Promotion[];
 }
 
 interface MobileProps {
@@ -150,15 +153,20 @@ const Mobile: React.FC<MobileProps> = ({
 
           const discountPercent =
             originalPrice > 0 && currentPrice < originalPrice
-              ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+              ? (
+                ((originalPrice - currentPrice) / originalPrice) * 100
+              ).toFixed(1)
               : 0;
+
 
           const hasDiscount = discountPercent > 0;
           const ratingValue = product.rating?.average || 0;
           const promoText =
-            product.promotion?.description || "Không phí chuyển đổi khi trả góp 0%...";
+            product.promotions && product.promotions.length > 0
+              ? product.promotions[0].description
+              : "Không phí chuyển đổi khi trả góp 0%...";
 
-          // 2. Trạng thái yêu thích ban đầu (thường lấy từ user profile hoặc mặc định false)
+
           const initialIsFavorite = false;
 
           return (
@@ -205,9 +213,24 @@ const Mobile: React.FC<MobileProps> = ({
                       </p>
                     )}
                   </div>
-                  <p className="mb-6 mt-2 line-clamp-2 h-auto rounded bg-gray-200 p-1 text-[10px] font-semibold text-black lg:mb-10 lg:text-xs">
-                    {promoText}
-                  </p>
+
+                  <div className="mb-6 mt-2 line-clamp-2 h-full lg:mb-16 lg:text-xs">
+                    <div className="group/promo relative flex items-center gap-1.5 overflow-hidden rounded-lg border border-red-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-red-400 hover:shadow-md">
+
+                      <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-red-500 to-orange-400" />
+
+                      <div className="flex flex-col">
+                        <p className="line-clamp-2 text-[10px] leading-tight text-gray-700 lg:text-[11px]">
+                          <span className="inline-block rounded-sm bg-red-600 px-1 py-0.5 text-[9px] font-bold uppercase text-white lg:text-[10px] mr-1">
+                            Khuyến Mãi
+                          </span>
+                          <span className="font-medium">{promoText}</span>
+                        </p>
+                      </div>
+
+                      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-1000 group-hover/promo:translate-x-full" />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs lg:mt-12">

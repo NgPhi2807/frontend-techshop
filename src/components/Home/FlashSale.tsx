@@ -9,7 +9,14 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
 const IMAGE_BASE_URL = import.meta.env.PUBLIC_IMAGE_BASE_URL;
-
+interface Promotion {
+  id: number;
+  name: string;
+  description: string;
+  discountType: string;
+  discountValue: number;
+  active: boolean;
+}
 interface Product {
   id: number;
   name: string;
@@ -18,17 +25,14 @@ interface Product {
   price: number;
   special_price: number;
   rating: { average: number };
-  promotions: {
-    id: number;
-    name: string;
-    description: string;
-  } | null;
+  promotions: Promotion[] | null;
 }
 
 interface FlashSaleSwiperProps {
   datamobile: Product[] | undefined;
   datalaptop: Product[] | undefined;
 }
+
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("vi-VN").format(price);
@@ -137,16 +141,18 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
 
                 const discountPercent =
                   originalPrice > 0 && currentPrice < originalPrice
-                    ? Math.round(
-                      ((originalPrice - currentPrice) / originalPrice) * 100,
-                    )
+                    ? (
+                      ((originalPrice - currentPrice) / originalPrice) * 100
+                    ).toFixed(1)
                     : 0;
+
 
                 const hasDiscount = discountPercent > 0;
                 const ratingValue = product.rating?.average || 0;
                 const promoText =
-                  product.promotions?.description ||
-                  "Không phí chuyển đổi khi trả góp 0%...";
+                  product.promotions && product.promotions.length > 0
+                    ? product.promotions[0].description
+                    : "Không phí chuyển đổi khi trả góp 0%...";
 
                 return (
                   <SwiperSlide key={product.id}>
@@ -188,19 +194,33 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
                             {formatPrice(currentPrice)}₫
                           </p>
 
-                          {hasDiscount && (
-                            <p className="text-[10px] text-gray-500 line-through lg:text-xs">
-                              {formatPrice(originalPrice)}₫
-                            </p>
-                          )}
+                          <p className="text-[10px] text-gray-500 line-through lg:text-xs">
+                            {formatPrice(originalPrice)}₫
+                          </p>
                         </div>
 
-                        <p className="mt-4 line-clamp-2 h-auto rounded bg-gray-200 p-1 text-[10px] font-semibold text-black lg:text-xs">
-                          {promoText}
-                        </p>
+                        <div className="mt-3 h-[42px] lg:h-[48px]"> {/* Khung cố định chiều cao để các card luôn đều hàng */}
+                          <div className="group/promo relative flex items-center gap-1.5 overflow-hidden rounded-lg border border-red-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-red-400 hover:shadow-md">
+
+                            {/* Một dải màu mỏng bên trái tạo điểm nhấn */}
+                            <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-red-500 to-orange-400" />
+
+                            <div className="flex flex-col">
+                              <p className="line-clamp-2 text-[10px] leading-tight text-gray-700 lg:text-[11px]">
+                                <span className="inline-block rounded-sm bg-red-600 px-1 py-0.5 text-[9px] font-bold uppercase text-white lg:text-[10px] mr-1">
+                                  Khuyến Mãi
+                                </span>
+                                <span className="font-medium">{promoText}</span>
+                              </p>
+                            </div>
+
+                            {/* Hiệu ứng ánh kim nhẹ khi hover vào card (tùy chọn) */}
+                            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-1000 group-hover/promo:translate-x-full" />
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="mt-6 flex items-center justify-between border-t border-gray-100 py-3 text-xs">
+                      <div className="mt-6 flex items-center justify-between border-t border-gray-100 py-3 text-xs ">
                         <div className="flex items-center font-bold text-yellow-500">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -291,7 +311,7 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

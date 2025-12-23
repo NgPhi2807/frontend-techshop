@@ -1,4 +1,3 @@
-// src/components/AddressManagementLayout.tsx
 
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore"; 
@@ -8,9 +7,7 @@ import { Trash2, Edit, Home } from "lucide-react";
 import { toast } from "react-toastify";
 import { deleteAddressApi, type AddressPayload } from "../../api/addressApi"; 
 
-// =========================================================
-// 1. INTERFACES
-// =========================================================
+
 
 interface Address extends AddressPayload {
     id: number;
@@ -27,9 +24,6 @@ interface CommonFormProps {
     onSubmissionSuccess: () => void;
 }
 
-// =========================================================
-// 2. COMPONENT AddressItem
-// =========================================================
 
 const AddressItem: React.FC<AddressItemProps> = ({
     id, name, phone, line, ward, district, province, isDefault, onDelete, onEdit, userName, userPhone,
@@ -51,7 +45,6 @@ const AddressItem: React.FC<AddressItemProps> = ({
    return (
     <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3">
-            {/* Left Content */}
             <div className="flex flex-wrap items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-50 text-red-600">
                     <Home className="h-4 w-4" />
@@ -72,7 +65,6 @@ const AddressItem: React.FC<AddressItemProps> = ({
                 )}
             </div>
 
-            {/* Action Buttons */}
             <div className="flex items-center space-x-3 sm:justify-end w-full sm:w-auto">
                 <button
                     onClick={handleEditClick}
