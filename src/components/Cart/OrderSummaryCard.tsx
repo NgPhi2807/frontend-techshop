@@ -26,27 +26,10 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
   handleSelectOffer,
   handleUseRewards,
 }) => {
-  const rewardActionText = isLoggedIn
-    ? `✨ Sử dụng ${formatCurrency(totals.diemThuong)} điểm thưởng`
-    : "✨ Đăng nhập để sử dụng điểm thưởng";
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        <button
-          onClick={handleSelectOffer}
-          className="flex w-full items-center justify-between text-base font-semibold text-red-600 transition duration-150 hover:opacity-80"
-        >
-          <span>🔖 Chọn hoặc nhập ưu đãi</span> <span>&gt;</span>
-        </button>
-        <hr className="my-3 border-gray-100" />
-        <button
-          onClick={handleUseRewards}
-          className="flex w-full items-center justify-between text-sm font-semibold text-gray-800 transition duration-150 hover:opacity-80"
-        >
-          <span>{rewardActionText}</span> <span>&gt;</span>
-        </button>
-      </div>
+
 
       <div className="rounded-lg border border-gray-200 bg-white p-4">
         <h4 className="mb-3 text-base font-bold text-gray-800">
@@ -94,11 +77,10 @@ const OrderSummaryCard: React.FC<OrderSummaryCardProps> = ({
         <button
           onClick={handlePlaceOrder}
           disabled={isPlacingOrder}
-          className={`mt-4 w-full rounded-lg py-3 text-lg font-bold text-white shadow-lg transition duration-150 ${
-            isPlacingOrder
-              ? "cursor-not-allowed bg-red-400"
-              : "bg-red-600 hover:bg-red-700"
-          }`}
+          className={`mt-4 w-full rounded-lg py-3 text-lg font-bold text-white shadow-lg transition duration-150 ${isPlacingOrder
+            ? "cursor-not-allowed bg-red-400"
+            : "bg-red-600 hover:bg-red-700"
+            }`}
         >
           {isPlacingOrder ? "Đang xử lý..." : "Đặt hàng"}
         </button>

@@ -11,7 +11,6 @@ import {
     Headset,
     Circle,
     MessageCircle,
-    Plus,
 } from "lucide-react";
 
 // --- Cấu hình Biến Môi trường ---
@@ -29,7 +28,7 @@ interface Product {
 }
 
 interface Message {
-    senderType: "USER" | "BOT" | "STAFF";
+    senderType: "USER" | "BOT" | "STAFF" | "SYSTEM";
     content: string;
     createdAt: string;
 }
@@ -38,7 +37,7 @@ const MobileNav: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [showContact, setShowContact] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false); // State mới cho nút Hỗ trợ Mobile
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { accessToken } = useAuthStore();
     const [messages, setMessages] = useState<Message[]>([]);
@@ -50,20 +49,55 @@ const MobileNav: React.FC = () => {
     const socketRef = useRef<WebSocket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // --- Logic Xử lý Chat & WebSocket (Giữ nguyên) ---
+    // --- Logic Xử lý Bóc tách JSON linh hoạt ---
     const parseBotContent = (content: string) => {
         let textResult = "";
         let productsResult: Product[] = [];
+
         const extract = (input: any) => {
-            try {
-                const data = typeof input === 'string' ? JSON.parse(input.replace(/```json\n?|```/g, "").replace(/\u00A0/g, " ").trim()) : input;
-                if (data.reply_text) {
-                    if (typeof data.reply_text === 'string' && data.reply_text.includes('{')) extract(data.reply_text);
-                    else textResult = data.reply_text;
+            if (!input) return;
+
+            // Trường hợp 1: Input đã là Object
+            if (typeof input === 'object') {
+                if (input.reply_text) {
+                    // Nếu reply_text chứa chuỗi JSON khác (như trường hợp Guest)
+                    if (typeof input.reply_text === 'string' && input.reply_text.includes('{')) {
+                        extract(input.reply_text);
+                    } else {
+                        textResult = input.reply_text;
+                    }
                 }
-                if (data.suggested_products && Array.isArray(data.suggested_products)) productsResult = data.suggested_products;
-            } catch (e) { textResult = input.replace(/```json\n?|```/g, "").trim(); }
+                if (input.suggested_products && Array.isArray(input.suggested_products)) {
+                    productsResult = input.suggested_products;
+                }
+                return;
+            }
+
+            // Trường hợp 2: Input là String (có thể là JSON thuần hoặc Text + Markdown JSON)
+            try {
+                // Thử parse trực tiếp nếu là JSON thuần
+                const data = JSON.parse(input);
+                extract(data);
+            } catch (e) {
+                // Nếu không phải JSON thuần, dùng Regex tìm khối {...}
+                const jsonMatch = input.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    try {
+                        const cleanJson = jsonMatch[0]
+                            .replace(/\\n/g, "\n")
+                            .replace(/\u00A0/g, " ");
+                        const data = JSON.parse(cleanJson);
+                        extract(data);
+                    } catch (innerError) {
+                        textResult = input.replace(/```json\n?|```/g, "").trim();
+                    }
+                } else {
+                    // Không tìm thấy JSON, coi như văn bản thuần
+                    textResult = input.replace(/```json\n?|```/g, "").trim();
+                }
+            }
         };
+
         extract(content);
         return { replyText: textResult, products: productsResult };
     };
@@ -147,7 +181,7 @@ const MobileNav: React.FC = () => {
             const { replyText, products } = parseBotContent(m.content);
             return (
                 <div className="w-full flex flex-col gap-4">
-                    <p className="whitespace-pre-wrap leading-relaxed text-gray-800 text-[14px] font-medium">{replyText}</p>
+                    <p className="whitespace-pre-wrap leading-relaxed text-gray-800 text-[14px] font-medium">{replyText || "Đang xử lý..."}</p>
                     {products.length > 0 && (
                         <div className="space-y-3 border-l-2 border-red-200 pl-3">
                             {products.map((p, index) => (
@@ -187,7 +221,7 @@ const MobileNav: React.FC = () => {
 
     return (
         <>
-            {/* Overlay cho Mobile khi mở menu hoặc chat */}
+            {/* Overlay Mobile */}
             {(isChatOpen || isMenuOpen) && (
                 <div
                     className="fixed inset-0 bg-black/40 z-[9998] md:hidden backdrop-blur-sm transition-opacity"
@@ -253,11 +287,7 @@ const MobileNav: React.FC = () => {
 
                 {/* --- NAVIGATION BUTTONS --- */}
                 <div className={`flex flex-col gap-3 pb-5 pr-4 md:p-0 pointer-events-auto transition-all ${isChatOpen ? "hidden md:flex" : "flex"}`}>
-
-                    {/* Danh sách 3 nút con: Lên đầu, Tư vấn, Liên hệ */}
                     <div className={`flex flex-col gap-3 transition-all duration-300 ${isMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none md:opacity-100 md:translate-y-0 md:pointer-events-auto"}`}>
-
-                        {/* Nút Lên đầu */}
                         <button
                             onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setIsMenuOpen(false); }}
                             className={`flex items-center justify-center shadow-lg text-white w-14 h-14 flex-col bg-gray-900 text-[9px] rounded-2xl transition-all duration-500 ${isVisible ? "scale-100" : "scale-0"}`}
@@ -265,7 +295,6 @@ const MobileNav: React.FC = () => {
                             <ChevronsUp size={20} /><span>Lên đầu</span>
                         </button>
 
-                        {/* Nút Hỗ Trợ Tư Vấn */}
                         <button
                             onClick={() => { setIsChatOpen(true); setUnreadCount(0); setIsMenuOpen(false); }}
                             className="flex items-center justify-center shadow-lg text-white w-14 h-14 flex-col bg-indigo-600 text-[9px] rounded-2xl relative hover:scale-110 active:scale-95 transition-all"
@@ -274,7 +303,6 @@ const MobileNav: React.FC = () => {
                             {unreadCount > 0 && <span className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white animate-bounce shadow-sm">{unreadCount}</span>}
                         </button>
 
-                        {/* Nút Liên hệ */}
                         <button
                             onClick={() => { setShowContact(!showContact); setIsMenuOpen(false); }}
                             className="flex items-center justify-center shadow-lg text-white w-14 h-14 flex-col bg-red-600 text-[9px] rounded-2xl hover:scale-110 active:scale-95 transition-all"
@@ -283,20 +311,15 @@ const MobileNav: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* NÚT TỔNG TRÊN MOBILE: Hiện dấu Plus hoặc X */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="md:hidden flex items-center justify-center shadow-2xl text-white w-14 h-14 flex-col bg-red-500 rounded-full hover:scale-110 active:scale-95 transition-all z-[10001] border-4 border-white"
                     >
-                        {isMenuOpen ? (
-                            <X size={24} />
-                        ) : (
+                        {isMenuOpen ? <X size={24} /> : (
                             <div className="flex flex-col items-center">
                                 <div className="relative">
                                     <Headset size={20} />
-                                    {unreadCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-yellow-400 w-2.5 h-2.5 rounded-full border border-red-500" />
-                                    )}
+                                    {unreadCount > 0 && <span className="absolute -top-1 -right-1 bg-yellow-400 w-2.5 h-2.5 rounded-full border border-red-500" />}
                                 </div>
                                 <span className="text-[8px] font-bold uppercase mt-0.5">Hỗ trợ</span>
                             </div>

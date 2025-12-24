@@ -64,13 +64,13 @@ const USER_DROPDOWN_ITEMS: UserDropdownItem[] = [
     {
         id: 'favorites',
         name: 'Sản phẩm yêu thích',
-        href: '/tai-khoan/yeu-thich',
+        href: '/tai-khoan/san-pham-yeu-thich',
         icon: Heart,
     },
     {
         id: 'address',
         name: 'Địa chỉ nhận hàng',
-        href: '/tai-khoan/dia-chi',
+        href: '/tai-khoan/dia-chi-nhan-hang',
         icon: MapPin,
     },
 ];

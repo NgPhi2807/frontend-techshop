@@ -294,7 +294,7 @@ const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({
 
   if (isLoading || isRedirecting) {
     return (
-      <div className="relative flex px-4">
+      <div className="flex min-h-[60vh] items-center justify-center ">
         <div className="relative flex flex-col items-center rounded-3xl border border-white/60 bg-white/70 px-12 py-10 text-center shadow-lg">
           <div className="relative mb-6 h-14 w-14">
             <div className="absolute inset-0 animate-spin rounded-full border-4 border-blue-500/30 border-t-blue-600" />

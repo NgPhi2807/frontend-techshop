@@ -199,14 +199,14 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
                           </p>
                         </div>
 
-                        <div className="mt-3 h-[42px] lg:h-[48px]"> {/* Khung cố định chiều cao để các card luôn đều hàng */}
+                        <div className="mt-3 h-[42px] lg:h-[70px]"> {/* Khung cố định chiều cao để các card luôn đều hàng */}
                           <div className="group/promo relative flex items-center gap-1.5 overflow-hidden rounded-lg border border-red-200 bg-white p-1.5 shadow-sm transition-all duration-300 hover:border-red-400 hover:shadow-md">
 
                             {/* Một dải màu mỏng bên trái tạo điểm nhấn */}
                             <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-red-500 to-orange-400" />
 
                             <div className="flex flex-col">
-                              <p className="line-clamp-2 text-[10px] leading-tight text-gray-700 lg:text-[11px]">
+                              <p className="line-clamp-3 text-[10px] leading-tight text-gray-700 lg:text-[11px]">
                                 <span className="inline-block rounded-sm bg-red-600 px-1 py-0.5 text-[9px] font-bold uppercase text-white lg:text-[10px] mr-1">
                                   Khuyến Mãi
                                 </span>
@@ -214,7 +214,6 @@ const FlashSaleSwiper: React.FC<FlashSaleSwiperProps> = ({
                               </p>
                             </div>
 
-                            {/* Hiệu ứng ánh kim nhẹ khi hover vào card (tùy chọn) */}
                             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-1000 group-hover/promo:translate-x-full" />
                           </div>
                         </div>
