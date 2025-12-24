@@ -2,7 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import HeaderMain from "../../../components/Header/Header";
 import UserAccountLayout from "../../../components/UserPage/UserPageLayout";
-import ShippingAddressList from "../../../components/UserPage/ShippingAddressList";
+import CustomerChat from "../../../components/UserPage/CustomerChat";
 const pageTitle = `Địa chỉ giao hàng`;
 const breadcrumbTitle = `Địa chỉ giao hàng`;
 const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
@@ -10,16 +10,16 @@ import Footer from "../../../components/Footer/Footer";
 ---
 
 <Layout>
-  <Fragment slot="head">
-    <title>{pageTitle} | {siteTitle}</title>
-  </Fragment>
+    <Fragment slot="head">
+        <title>{pageTitle} | {siteTitle}</title>
+    </Fragment>
 
-  <HeaderMain client:only />
+    <HeaderMain client:only />
 
-  <main>
-    <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:only>
-      <ShippingAddressList client:only />
-    </UserAccountLayout>
-  </main>
-  <Footer />
+    <main>
+        <UserAccountLayout breadcrumbTitle={breadcrumbTitle} client:only>
+            <CustomerChat client:only />
+        </UserAccountLayout>
+    </main>
+    <Footer />
 </Layout>

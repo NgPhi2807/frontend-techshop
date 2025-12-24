@@ -3,7 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import HeaderMain from "../../../components/Header/Header";
 import UserAccountLayout from "../../../components/UserPage/UserPageLayout";
 import Profile from "../../../components/UserPage/Profile.tsx"; // Nội dung 75%
-
+import Footer from "../../../components/Footer/Footer";
 const pageTitle = `Thông tin cá nhân`;
 const breadcrumbTitle = `Thông tin cá nhân`;
 const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chính hãng`;
@@ -21,4 +21,5 @@ const siteTitle = `MTSMART - Cửa hàng điện thoại, laptop giá rẻ, chí
       <Profile client:load />
     </UserAccountLayout>
   </main>
+  <Footer />
 </Layout>

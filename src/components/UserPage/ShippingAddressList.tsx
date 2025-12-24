@@ -1,11 +1,11 @@
 
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore"; 
-import AddressForm from "./AddressFilterPanel"; 
-import UpdateAddressForm from "./UpdateAddressForm"; 
+import { useCustomerProfileStore } from "../../stores/useCustomerProfileStore";
+import AddressForm from "./AddressFilterPanel";
+import UpdateAddressForm from "./UpdateAddressForm";
 import { Trash2, Edit, Home } from "lucide-react";
 import { toast } from "react-toastify";
-import { deleteAddressApi, type AddressPayload } from "../../api/addressApi"; 
+import { deleteAddressApi, type AddressPayload } from "../../api/addressApi";
 
 
 
@@ -15,7 +15,7 @@ interface Address extends AddressPayload {
 
 interface AddressItemProps extends Address {
     onDelete: (addressId: number) => Promise<void>;
-    onEdit: (address: Address) => void; 
+    onEdit: (address: Address) => void;
     userName: string;
     userPhone: string;
 }
@@ -37,59 +37,58 @@ const AddressItem: React.FC<AddressItemProps> = ({
             onDelete(id);
         }
     };
-    
+
     const handleEditClick = () => {
         onEdit({ id, name, phone, line, ward, district, province, isDefault });
     };
 
-   return (
-    <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-50 text-red-600">
-                    <Home className="h-4 w-4" />
+    return (
+        <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-50 text-red-600">
+                        <Home className="h-4 w-4" />
+                    </div>
+
+                    <p className="font-semibold text-gray-800 break-all">
+                        {contactName} |
+                    </p>
+
+                    <p className="font-semibold text-gray-800 break-all">
+                        {contactPhone}
+                    </p>
+
+                    {isDefault && (
+                        <span className="rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                            Mặc định
+                        </span>
+                    )}
                 </div>
 
-                <p className="font-semibold text-gray-800 break-all">
-                    {contactName} |
-                </p>
+                <div className="flex items-center space-x-3 sm:justify-end w-full sm:w-auto">
+                    <button
+                        onClick={handleEditClick}
+                        className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700"
+                    >
+                        <Edit className="h-4 w-4" /> Sửa
+                    </button>
 
-                <p className="font-semibold text-gray-800 break-all">
-                    {contactPhone}
-                </p>
-
-                {isDefault && (
-                    <span className="rounded-md bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                        Mặc định
-                    </span>
-                )}
-            </div>
-
-            <div className="flex items-center space-x-3 sm:justify-end w-full sm:w-auto">
-                <button
-                    onClick={handleEditClick}
-                    className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700"
-                >
-                    <Edit className="h-4 w-4" /> Sửa
-                </button>
-
-                <button
-                    onClick={handleDeleteClick}
-                    disabled={isDefault}
-                    className={`flex items-center gap-1 text-sm font-medium transition-colors ${
-                        isDefault
+                    <button
+                        onClick={handleDeleteClick}
+                        disabled={isDefault}
+                        className={`flex items-center gap-1 text-sm font-medium transition-colors ${isDefault
                             ? "cursor-not-allowed text-gray-400"
                             : "text-gray-600 hover:text-red-600"
-                    }`}
-                >
-                    <Trash2 className="h-4 w-4" /> Xóa
-                </button>
+                            }`}
+                    >
+                        <Trash2 className="h-4 w-4" /> Xóa
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <p className="pt-4 text-gray-600 break-words">{fullAddress}</p>
-    </div>
-);
+            <p className="pt-4 text-gray-600 break-words">{fullAddress}</p>
+        </div>
+    );
 
 };
 
@@ -101,29 +100,18 @@ const LoadingState: React.FC = () => (
     </div>
 );
 
-const EmptyState: React.FC<{onAddNew: () => void}> = ({ onAddNew }) => (
+const EmptyState: React.FC<{ onAddNew: () => void }> = ({ onAddNew }) => (
     <div className="rounded-lg border border-gray-200 p-8 text-center text-gray-500 bg-white shadow-sm">
         <p className="mb-4 text-lg font-semibold">Bạn chưa có địa chỉ nhận hàng nào.</p>
-        <button
-            onClick={onAddNew}
-            className="rounded-lg bg-red-600 px-6 py-2 font-medium text-white transition-colors hover:bg-red-700"
-        >
-            Thêm địa chỉ đầu tiên
-        </button>
+
     </div>
 );
 
-// =========================================================
-// 4. COMPONENT AddressManagementLayout
-// =========================================================
-
 const AddressManagementLayout: React.FC = () => {
-    // SỬA LỖI TS: Chỉ destructure user và fetchProfile
-    const { user, fetchProfile } = useCustomerProfileStore(); 
+    const { user, fetchProfile } = useCustomerProfileStore();
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
-    // initialLoad được dùng để kiểm soát cả trạng thái loading ban đầu
-    const [initialLoad, setInitialLoad] = useState(true); 
+    const [initialLoad, setInitialLoad] = useState(true);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
     useEffect(() => {
@@ -132,15 +120,12 @@ const AddressManagementLayout: React.FC = () => {
             token = localStorage.getItem("accessToken");
             setAccessToken(token);
         }
-        
-        // Tải profile nếu chưa có hoặc đang trong quá trình tải ban đầu
-        if (!user || initialLoad) { 
-            // Giả định fetchProfile không ném lỗi nếu không có token, hoặc tự quản lý loading
+
+        if (!user || initialLoad) {
             fetchProfile(true).finally(() => {
-                 setInitialLoad(false);
+                setInitialLoad(false);
             });
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchProfile]);
 
     const handleOpenForm = (address: Address | null = null) => {
@@ -152,10 +137,10 @@ const AddressManagementLayout: React.FC = () => {
         setIsFormOpen(false);
         setEditingAddress(null);
     };
-    
+
     const handleEditAddress = useCallback((address: Address) => {
         handleOpenForm(address);
-    }, []); 
+    }, []);
 
     const handleDeleteAddress = useCallback(
         async (addressId: number) => {
@@ -188,7 +173,7 @@ const AddressManagementLayout: React.FC = () => {
 
     const userName = useMemo(() => user?.name || "Người dùng", [user?.name]);
     const userPhone = useMemo(() => user?.phone || "Chưa có SĐT", [user?.phone]);
-    
+
     const formTitle = editingAddress ? "Chỉnh sửa địa chỉ" : "Thêm địa chỉ mới";
 
     const FormToRender = useMemo(() => {
@@ -199,18 +184,18 @@ const AddressManagementLayout: React.FC = () => {
 
         if (editingAddress) {
             return (
-                <UpdateAddressForm 
-                    initialData={editingAddress} 
-                    onSubmissionSuccess={submissionHandler} 
+                <UpdateAddressForm
+                    initialData={editingAddress}
+                    onSubmissionSuccess={submissionHandler}
                     onClose={handleCloseForm}
                     accessToken={accessToken}
                 />
             );
         }
-        
+
         return (
-            <AddressForm 
-                onSubmissionSuccess={submissionHandler} 
+            <AddressForm
+                onSubmissionSuccess={submissionHandler}
             />
         );
     }, [editingAddress, fetchProfile, accessToken]);
@@ -233,7 +218,7 @@ const AddressManagementLayout: React.FC = () => {
                         key={address.id}
                         {...address}
                         onDelete={handleDeleteAddress}
-                        onEdit={handleEditAddress} 
+                        onEdit={handleEditAddress}
                         userName={userName}
                         userPhone={userPhone}
                     />
@@ -251,7 +236,7 @@ const AddressManagementLayout: React.FC = () => {
 
             {initialLoad === false && (
                 <button
-                    onClick={() => handleOpenForm(null)} 
+                    onClick={() => handleOpenForm(null)}
                     className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700"
                 >
                     Thêm địa chỉ mới
@@ -262,9 +247,8 @@ const AddressManagementLayout: React.FC = () => {
 
     const AddressSidePanel = (
         <div
-            className={`fixed right-0 top-0 z-50 h-full w-full max-w-md transform bg-white shadow-2xl transition-transform duration-500 md:w-2/5 ${
-                isFormOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+            className={`fixed right-0 top-0 z-50 h-full w-full max-w-md transform bg-white shadow-2xl transition-transform duration-500 md:w-2/5 ${isFormOpen ? "translate-x-0" : "translate-x-full"
+                }`}
         >
             <div className="flex items-center justify-between border-b border-gray-200 p-4">
                 <h3 className="text-lg font-bold text-gray-800">{formTitle}</h3>
@@ -286,14 +270,14 @@ const AddressManagementLayout: React.FC = () => {
     );
 
     return (
-        <div className="relative min-h-screen w-full"> 
+        <div className="relative min-h-screen w-full">
             {isFormOpen && (
                 <div
                     className="fixed inset-0 z-40 bg-black opacity-30"
                     onClick={handleCloseForm}
                 />
             )}
-            
+
             <div className="">
                 {AddressListHeader}
                 {AddressContent}

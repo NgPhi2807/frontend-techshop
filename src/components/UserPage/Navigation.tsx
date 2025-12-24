@@ -54,8 +54,8 @@ const secondaryNavItems: NavItem[] = [
   },
   {
     icon: Shield,
-    text: "Chat với chúng tôi",
-    href: "/tai-khoan/chat-voi-chung-toi",
+    text: "Hỗ trợ",
+    href: "/tai-khoan/ho-tro",
   },
 ];
 

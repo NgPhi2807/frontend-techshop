@@ -20,7 +20,8 @@ import {
     Smartphone,
     Monitor,
     Watch,
-    Mic
+    Mic,
+    MessageCircle,
 } from "lucide-react";
 import { useCartStore } from "../../stores/cartStore";
 import AuthModals from "../Auth/AuthModal";
@@ -73,6 +74,12 @@ const USER_DROPDOWN_ITEMS: UserDropdownItem[] = [
         href: '/tai-khoan/dia-chi-nhan-hang',
         icon: MapPin,
     },
+    {
+        id: 'messege',
+        name: 'Hỗ trợ',
+        href: '/tai-khoan/ho-tro',
+        icon: MessageCircle,
+    }
 ];
 
 const mobileNavItems: MobileNavItem[] = [

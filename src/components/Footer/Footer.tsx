@@ -81,20 +81,6 @@ const Footer: React.FC = () => {
                 </div>
             </div>
 
-            {/* Bottom Footer */}
-            <div className="bg-neutral-100 py-6 px-4">
-                <div className="mx-auto max-w-screen-xl text-center text-[11px] text-neutral-500 leading-relaxed">
-                    <p className="font-bold text-neutral-700 uppercase mb-2">Công ty TNHH Công Nghệ MT Smart</p>
-                    <p>Địa chỉ: 123 Đường Số 1, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh.</p>
-                    <p>GPĐKKD số: 0316172372 do Sở KH & ĐT TP.HCM cấp ngày 01/01/2020.</p>
-                    <p>Email: contact@mtsmart.vn - Điện thoại: 028.7108.9666</p>
-
-                    <div className="mt-4 flex items-center justify-center gap-4 opacity-70 grayscale">
-                        <img alt="Bộ công thương" width={80} src="https://cdn2.cellphones.com.vn/80x,webp/media/logo/logoSaleNoti.png" />
-                        <img alt="DMCA" width={80} src="https://images.dmca.com/Badges/dmca_copyright_protected150c.png" />
-                    </div>
-                </div>
-            </div>
         </footer>
     );
 };

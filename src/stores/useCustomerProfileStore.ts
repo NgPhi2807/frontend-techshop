@@ -1,9 +1,6 @@
 import { create } from "zustand";
 
 const API_URL = import.meta.env.PUBLIC_API_BASE_URL;
-const CACHE_KEY = "customerProfileCache";
-const CACHE_DURATION = 5 * 60 * 1000;
-const isClient = typeof window !== "undefined";
 
 interface Address {
   id: number;
@@ -42,27 +39,18 @@ interface ProfileState {
   user: UserData | null;
   loading: boolean;
   error: string | null;
-  lastFetched: number | null;
-  fetchProfile: (forceUpdate?: boolean) => Promise<void>;
+  fetchProfile: () => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<{ success: boolean; message: string }>;
 }
 
 export const useCustomerProfileStore = create<ProfileState>((set, get) => {
-  const cache = isClient ? JSON.parse(localStorage.getItem(CACHE_KEY) || "{}") : {};
-
   return {
-    user: cache.user || null,
+    user: null, // Khởi tạo null, không đọc từ cache
     loading: false,
     error: null,
-    lastFetched: cache.lastFetched || null,
 
-    fetchProfile: async (forceUpdate = false) => {
-      if (!isClient) return;
-      const { lastFetched, user } = get();
-      const now = Date.now();
-
-      if (!forceUpdate && user && lastFetched && now - lastFetched < CACHE_DURATION) return;
-
+    fetchProfile: async () => {
+      // Bỏ tham số forceUpdate và logic kiểm tra lastFetched
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         set({ user: null, error: "Vui lòng đăng nhập." });
@@ -80,9 +68,8 @@ export const useCustomerProfileStore = create<ProfileState>((set, get) => {
         const json: ApiResponse<UserData> = await res.json();
         if (!res.ok || json.code !== 1000 || !json.data) throw new Error(json.message);
 
-        const newState = { user: json.data, error: null, loading: false, lastFetched: Date.now() };
-        set(newState);
-        localStorage.setItem(CACHE_KEY, JSON.stringify(newState));
+        // Lưu state nhưng KHÔNG lưu vào localStorage
+        set({ user: json.data, error: null, loading: false });
       } catch (err: any) {
         set({ error: err.message, loading: false });
       }
@@ -104,9 +91,9 @@ export const useCustomerProfileStore = create<ProfileState>((set, get) => {
         if (!res.ok || json.code !== 1000) throw new Error(json.message);
 
         const updatedUser = { ...get().user, ...payload } as UserData;
-        const newState = { ...get(), user: updatedUser, loading: false };
-        set(newState);
-        localStorage.setItem(CACHE_KEY, JSON.stringify(newState));
+
+        set({ user: updatedUser, loading: false });
+
         return { success: true, message: "Thành công" };
       } catch (err: any) {
         set({ loading: false });
