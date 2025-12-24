@@ -49,18 +49,14 @@ const MobileNav: React.FC = () => {
     const socketRef = useRef<WebSocket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // --- Logic Xử lý Bóc tách JSON linh hoạt ---
     const parseBotContent = (content: string) => {
         let textResult = "";
         let productsResult: Product[] = [];
 
         const extract = (input: any) => {
             if (!input) return;
-
-            // Trường hợp 1: Input đã là Object
             if (typeof input === 'object') {
                 if (input.reply_text) {
-                    // Nếu reply_text chứa chuỗi JSON khác (như trường hợp Guest)
                     if (typeof input.reply_text === 'string' && input.reply_text.includes('{')) {
                         extract(input.reply_text);
                     } else {
@@ -73,13 +69,10 @@ const MobileNav: React.FC = () => {
                 return;
             }
 
-            // Trường hợp 2: Input là String (có thể là JSON thuần hoặc Text + Markdown JSON)
             try {
-                // Thử parse trực tiếp nếu là JSON thuần
                 const data = JSON.parse(input);
                 extract(data);
             } catch (e) {
-                // Nếu không phải JSON thuần, dùng Regex tìm khối {...}
                 const jsonMatch = input.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     try {
@@ -92,7 +85,6 @@ const MobileNav: React.FC = () => {
                         textResult = input.replace(/```json\n?|```/g, "").trim();
                     }
                 } else {
-                    // Không tìm thấy JSON, coi như văn bản thuần
                     textResult = input.replace(/```json\n?|```/g, "").trim();
                 }
             }
@@ -187,11 +179,10 @@ const MobileNav: React.FC = () => {
                             {products.map((p, index) => (
                                 <div key={`text-${p.id}`} className="text-[13px] text-gray-700">
                                     <p className="font-bold text-red-700">{index + 1}. {p.name}</p>
-                                    {p.short_desc && <p className="italic text-gray-500 text-[11px] leading-tight">{p.short_desc}</p>}
                                     {p.highlights && (
                                         <div className="flex flex-wrap gap-1 mt-1">
                                             {p.highlights.map((h, i) => (
-                                                <span key={i} className="bg-red-50 text-red-600 text-[9px] px-1.5 py-0.5 rounded border border-red-100 font-medium">{h}</span>
+                                                <span key={i} className="bg-red-50 text-black text-[10px] px-1.5 py-0.5 rounded border border-red-100 font-medium">{h}</span>
                                             ))}
                                         </div>
                                     )}
@@ -200,7 +191,7 @@ const MobileNav: React.FC = () => {
                         </div>
                     )}
                     {products.length > 0 && (
-                        <div className="grid grid-cols-2 gap-2 w-full mt-2">
+                        <div className="grid grid-cols-3 gap-2 w-full mt-2">
                             {products.map((p) => (
                                 <div key={p.id} className="bg-white rounded-xl overflow-hidden flex flex-col p-2 h-full shadow-sm border border-gray-100">
                                     <div className="w-full aspect-square mb-1 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
@@ -232,7 +223,7 @@ const MobileNav: React.FC = () => {
             <div className="fixed bottom-0 right-0 md:bottom-5 md:right-4 flex items-end justify-end gap-2 z-[9999] w-full md:w-auto pointer-events-none">
                 {/* Chat Window */}
                 {isChatOpen && (
-                    <div className="flex flex-col overflow-hidden bg-[#FFF0F1] shadow-2xl fixed bottom-0 left-0 w-full h-[90vh] rounded-t-[2.5rem] z-[10000] md:relative md:w-[420px] md:h-[650px] md:rounded-3xl border border-red-100 animate-in slide-in-from-bottom-5 pointer-events-auto">
+                    <div className="flex flex-col overflow-hidden bg-[#FFF0F1] shadow-2xl fixed bottom-0 left-0 w-full h-[90vh] rounded-t-[2.5rem] z-[10000] md:relative md:w-[420px] md:h-[95vh] md:rounded-3xl border border-red-100 animate-in slide-in-from-bottom-5 pointer-events-auto">
                         <div className="bg-[#FFDDE0] p-4 flex justify-between items-center border-b border-red-100 shrink-0">
                             <div className="flex items-center gap-2">
                                 <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm">
@@ -252,13 +243,12 @@ const MobileNav: React.FC = () => {
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 no-scrollbar bg-[#FFF0F1]">
-                            {messages.length === 0 && <div className="text-center mt-10 text-gray-400 text-[13px] italic bg-white/40 px-4 py-2 rounded-2xl border border-dashed border-red-200 mx-4">Chào Anh/Chị, em có thể hỗ trợ gì ạ?</div>}
                             {messages.map((m, i) => (
                                 <div key={i} className={`flex gap-2 items-start ${m.senderType === "USER" ? "flex-row-reverse" : "flex-row"}`}>
                                     <div className="shrink-0 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-red-50 mt-1">
                                         {m.senderType === "BOT" ? <Bot size={18} className="text-indigo-500" /> : m.senderType === "STAFF" ? <UserRound size={18} className="text-green-500" /> : <User size={18} className="text-red-500" />}
                                     </div>
-                                    <div className={`flex flex-col ${m.senderType === "USER" ? "items-end" : "items-start"} max-w-[85%]`}>
+                                    <div className={`flex flex-col ${m.senderType === "USER" ? "items-end" : "items-start"} max-w-full`}>
                                         <div className={`px-4 py-2 rounded-2xl shadow-sm ${m.senderType === "USER" ? "bg-red-500 text-white rounded-tr-none" : "bg-white text-gray-800 rounded-tl-none border border-red-50"}`}>
                                             {renderMessageContent(m)}
                                         </div>
